@@ -118,6 +118,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"src/main.js":[function(require,module,exports) {
+//npm install @types/phaser
+
+// Autocompleta os types do phaser
 /** @type {import("../typings/phaser")} */
 
 var game = new Phaser.Game({
