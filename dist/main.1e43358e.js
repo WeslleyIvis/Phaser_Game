@@ -166,12 +166,48 @@ var LoadScene = /*#__PURE__*/function (_Phaser$Scene) {
     value: function init() {}
   }, {
     key: "preload",
-    value: function preload() {}
+    value: function preload() {
+      var _this = this;
+      // Load image, spritesheet, sound
+
+      this.load.image('menu_bg', './assets/Background/bg-menu.png');
+      this.load.spritesheet('bluebird', './assets/Enemies/BlueBird/Flying.png', {
+        frameWidth: 32,
+        frameHeight: 32
+      });
+      this.load.audio('menu_music', './assets/Songs/ost-menu.mp3');
+      var loadingTitle = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Loading', {
+        fontFamily: 'Arial',
+        fontSize: '40px',
+        color: '#ffffff'
+      });
+      loadingTitle.setOrigin(0.5, 2);
+
+      // Create loading bar
+
+      /* 
+      Loader Events:
+        Complete - when done loading everything.
+        Progress - loader number progress in decimal.
+      */
+
+      var loadingBar = this.add.graphics({
+        fillStyle: {
+          color: 0xffffff
+        }
+      });
+      this.load.on('progress', function (percent) {
+        loadingBar.fillRect(0, _this.game.renderer.height / 2, _this.game.renderer.width * percent, 50);
+      });
+      this.load.on('progress', function () {
+        //console.log('complete');
+      });
+    }
   }, {
     key: "create",
     value: function create() {
       this.scene.start(_CST.CST.SCENES.MENU, 'hello from snece');
-      this.scene.launch();
+      // this.scene.launch();
     }
   }]);
   return LoadScene;
@@ -211,14 +247,84 @@ var MenuScene = /*#__PURE__*/function (_Phaser$Scene) {
     key: "init",
     value: function init(data) {
       console.log(data);
-      console.log('moskey');
     }
   }, {
-    key: "preload",
-    value: function preload() {}
-  }, {
     key: "create",
-    value: function create() {}
+    value: function create() {
+      // setOrigin 0 = faz com que a imagem se pocione no y 0 e x 0
+      // setScale = Define o tamanho da imagem
+      // setDepth = Define a camada do objeto parecido com (z-index);
+
+      var defaultCaracter = {
+        fontFamily: 'Arial',
+        fontSize: '40px',
+        color: '#ffffff'
+      };
+
+      // Create Imagems
+
+      this.add.image(0, 0, 'menu_bg').setOrigin(0).setDepth(0);
+
+      // Create text Buttons
+      var playButton = this.add.text(this.renderer.width / 2.3, this.renderer.height / 2.5, '< Play >', defaultCaracter).setDepth(1);
+      var optionsButton = this.add.text(this.renderer.width / 2.3, this.renderer.height / 2.5 + 100, '< Options >', {
+        fontFamily: 'Arial',
+        fontSize: '28px',
+        color: '#ffffff'
+      }).setDepth(1);
+
+      // Create sprites
+
+      /* 
+          sprit - cria uma sprit com o tamanho definido
+          setVisible - torna o objeto visivel ou não na tela
+      */
+
+      var hoverSprit = this.add.sprite(100, 100, 'bluebird').setDepth(1);
+      hoverSprit.setScale(2);
+      hoverSprit.setVisible(false);
+
+      // create audio, disable pauseonblur
+
+      this.sound.play('menu_music', {
+        loop: true
+      });
+
+      // create Animations
+
+      this.anims.create({
+        key: 'walk',
+        frameRate: 8,
+        repeat: -1,
+        // repeat forever
+        frames: this.anims.generateFrameNames('bluebird', {
+          frames: [0, 1, 2, 3, 4, 5, 7, 8]
+        })
+      });
+
+      // Make images buttons interactive
+      /* 
+          Pointer Events
+            pointerover - hovering
+            pointerout - not hovering
+            ponterup - click and release
+            pointerdown - just click
+      */
+
+      playButton.setInteractive();
+      playButton.on('pointerover', function () {
+        hoverSprit.setVisible(true);
+        hoverSprit.play('walk');
+        hoverSprit.x = playButton.x - 50;
+        hoverSprit.y = playButton.y + 20;
+      });
+      playButton.on('pointerout', function () {
+        hoverSprit.setVisible(false);
+      });
+      playButton.on('pointerup', function () {
+        console.log('Abra te zezamu');
+      });
+    }
   }]);
   return MenuScene;
 }(Phaser.Scene);
@@ -234,9 +340,16 @@ var _MenuScene = require("./scenes/MenuScene");
 /** @type {import("../typings/phaser")} */
 
 var game = new Phaser.Game({
-  width: 100,
-  height: 100,
-  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene]
+  width: 800,
+  height: 600,
+  scene: [_LoadScene.LoadScene, _MenuScene.MenuScene],
+  render: {
+    pixelArt: true
+  },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  }
 });
 },{"./scenes/LoadScene":"src/scenes/LoadScene.js","./scenes/MenuScene":"src/scenes/MenuScene.js"}],"../../AppData/Roaming/nvm/v18.12.1/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -263,7 +376,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50741" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60563" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
