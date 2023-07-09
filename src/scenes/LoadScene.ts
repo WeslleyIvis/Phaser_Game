@@ -16,15 +16,13 @@ export class LoadScene extends Phaser.Scene {
       // @ts-ignore
       this.load.image(CST.IMAGE[prop], CST.IMAGE[prop])
     }
-
   }
   
   loadAudio() {
     this.load.setPath("./assets/audio");
     
     for(let prop in CST.AUDIO) {
-      //@ts-ignore
-      
+      //@ts-ignore 
       this.load.audio(CST.AUDIO[prop], CST.AUDIO[prop])
     }
   }
@@ -35,11 +33,17 @@ export class LoadScene extends Phaser.Scene {
     for(let prop in CST.SPRITE) {
       //@ts-ignore
       this.load.spritesheet(CST.SPRITE[prop], CST.SPRITE[prop], frameConfig)
-
     }
   }
 
   preload() {
+    //this.load.spritesheet("character", "./assets/sprites/spritesheet.png", {frameWidth: 48, frameHeight: 72})
+
+    // Load Atlas
+    this.load.atlas("characters", "./assets/sprites/spritesheet.png", "./assets/sprites/sprites.json")
+    this.load.atlas("enemies", "./assets/sprites/enemies.png", "./assets/sprites/enemies.json")
+    this.load.atlas("magicEffect", "./assets/sprites/magicEffect.png", "./assets/sprites/magicEffect.json")
+
     // Load image, spritesheet, sound
     this.loadImages();
     this.loadAudio();
@@ -85,6 +89,7 @@ export class LoadScene extends Phaser.Scene {
     });
 
     this.load.on('load', (file: Phaser.Loader.File) => {
+      // todos os arquivos que são carregados antes do jogo começar
       console.log(file.src);
     });
   }

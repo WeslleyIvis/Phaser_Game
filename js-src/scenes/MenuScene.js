@@ -5,19 +5,15 @@ export class MenuScene extends Phaser.Scene {
             key: CST.SCENES.MENU,
         });
     }
-    init() {
-    }
+    init() { }
     create() {
-        // setOrigin 0 = faz com que a imagem se pocione no y 0 e x 0
-        // setScale = Define o tamanho da imagem
-        // setDepth = Define a camada do objeto parecido com (z-index);
         const defaultCaracter = {
             fontFamily: 'Arial',
             fontSize: '40px',
-            color: '#ffffff',
+            color: '#00000',
         };
         // Create Imagems
-        this.add.image(0, 0, CST.IMAGE.BG_MENU).setOrigin(0).setDepth(0);
+        this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(.55).setOrigin(0).setDepth(0).setAlpha(0.5);
         // Create text Buttons
         let playButton = this.add
             .text(this.renderer.width / 2.3, this.renderer.height / 2.5, '< Play >', defaultCaracter)
@@ -30,17 +26,13 @@ export class MenuScene extends Phaser.Scene {
         })
             .setDepth(1);
         // Create sprites
-        /*
-            sprit - cria uma sprit com o tamanho definido
-            setVisible - torna o objeto visivel ou não na tela
-        */
         let hoverSprit = this.add.sprite(100, 100, CST.SPRITE.BLUEBIRD).setDepth(1);
         hoverSprit.setScale(2);
         hoverSprit.setVisible(false);
         // create audio, disable pauseonblur
-        this.sound.play(CST.AUDIO.MENU, {
-            loop: true,
-        });
+        // this.sound.play(CST.AUDIO.TITLE, {
+        //   loop: true,
+        // });
         // create Animations
         this.anims.create({
             key: 'walk',
@@ -51,13 +43,6 @@ export class MenuScene extends Phaser.Scene {
             }),
         });
         // Make images buttons interactive
-        /*
-            Pointer Events
-              pointerover - hovering
-              pointerout - not hovering
-              ponterup - click and release
-              pointerdown - just click
-        */
         playButton.setInteractive();
         optionsButton.setInteractive();
         playButton.on('pointerover', () => {
@@ -70,7 +55,8 @@ export class MenuScene extends Phaser.Scene {
             hoverSprit.setVisible(false);
         });
         playButton.on('pointerup', () => {
-            // this.scene.start();
+            console.log('CST.SCENES.PLAY');
+            this.scene.start(CST.SCENES.PLAY);
         });
         optionsButton.on('pointerover', () => {
             hoverSprit.setVisible(true);

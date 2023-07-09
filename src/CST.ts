@@ -2,15 +2,17 @@ export const CST = {
   SCENES: {
     LOAD: 'LOAD',
     MENU: 'MENU',
+    PLAY: 'PLAY'
   },
   IMAGE: {
     BG_MENU: "bg-menu.png",
   },
   AUDIO: {
-    MENU: "ost-menu.mp3"
+    TITLE: "title-song.mp3"
   },
   SPRITE: {
     BLUEBIRD: "bluebirdFlying.png",
-    VIRTUALGUY: "virtualguyRun.png"
+    ENEMIES: "enemies.png",
+    CHARACTER: "spritesheet.png",
   }
 };
