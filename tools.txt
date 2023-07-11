@@ -23,6 +23,10 @@
         * compress image 
             Download: https://pngquant.org/
 
+    Tiled Map Editor
+        * Edit Map
+            Download: https://thorbjorn.itch.io/tiled/download/eyJleHBpcmVzIjoxNjg4ODg5NjYzLCJpZCI6Mjg3Njh9.RrV1D8X1OxReZN6TG2AEFQ1nZbE%3d
+
 
 ** -- Phaser 3 Comands -- **
     setOrigin 0 = faz com que a imagem se pocione no y 0 e x 0
@@ -45,3 +49,8 @@
             animationrepeat
             animationupdate
             animationcomplete
+
+    3D Arcade {
+        ❌ this.character.x += 64 * (delta / 1000);
+        ✅ this.character.setVelocityX(64)
+    }
