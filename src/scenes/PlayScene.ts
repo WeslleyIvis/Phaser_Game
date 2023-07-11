@@ -1,8 +1,8 @@
 import { CST } from "../CST";
 
 export class PlayScene extends Phaser.Scene {
-    character!: Phaser.GameObjects.Sprite;
-    enemie!: Phaser.GameObjects.Sprite;
+    character!: Phaser.Physics.Arcade.Sprite;
+    assassin!: Phaser.Physics.Arcade.Sprite;
     keyboard!: {[index: string] : Phaser.Input.Keyboard.Key};
     constructor() {
         super({key: CST.SCENES.PLAY})
@@ -43,22 +43,28 @@ export class PlayScene extends Phaser.Scene {
         this.spriteAnimationMove('left', 6, 'characters', 'samira-left', 0, 2, 0)
         this.spriteAnimationMove('right', 6, 'characters', 'samira-right', 0, 2, 0)
         this.effectAnimation("magic", 2000, 'magicEffect', 'magic', 0, 60, true, true)
+
+        this.load.image("tiles", "./assets/maps/texture.png");
+        this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
 
     create() {
         // add a sprite to window, (x, y, texture, atlas)
-        this.character = this.add.sprite(100, 100, "characters", "samira-front1").setScale(2);      
-        const vielo = this.add.sprite(200, 200, "characters", "vielo-front1")
-        const magicEffect: Phaser.GameObjects.Sprite = this.add.sprite(300, 300, "magicEffect", "magic0").play('magic');
-        
+        this.character = this.physics.add.sprite(100, 100, "characters", "samira-front1");      
+        this.character.setSize(30,50).setOffset(10, 20);
+        this.assassin = this.physics.add.sprite(200, 200, "enemies", "assassin-front1")
+
+        this.character.setCollideWorldBounds(true);
+                
         //@ts-ignore
         window.character = this.character
 
         // Create keyboards && events 
+        //@ts-ignore
         this.keyboard = this.input.keyboard.addKeys("W, S, A, D")
-        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {        
+        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {        
             if(pointer.isDown) { //is clicking
-                let magic = this.add.sprite(pointer.x, pointer.y, "magicEffect", "magic1").play("magic");
+                let magic = this.physics.add.sprite(pointer.x, pointer.y, "magicEffect", "magic1").play("magic");
 
                 magic.on('animationcomplete', () => {
                     magic.destroy();
@@ -66,24 +72,60 @@ export class PlayScene extends Phaser.Scene {
             }
         })
 
-    }
+        // Create map
+        //const map = this.make.tilemap({key: "map"})
+        const map = this.add.tilemap("map")
+        const tileset = map.addTilesetImage("aseets", "tiles")
+        
+        // Layers
+        const ground = map.createLayer("ground", tileset, 0, 0)?.setDepth(-1)
+        const objcollider = map.createLayer("objcollider", tileset, 0, 0)
+        const objabove = map.createLayer("objabove", tileset, 0, 0)
+        
+
+        // Map Collision
+        this.physics.add.collider(this.character, objcollider)
+        this.physics.add.collider(this.assassin, objcollider)
+            // By tile property
+        objcollider?.setCollisionByProperty({collision: true})
+        
+            // By tile index
+        objcollider?.setCollision([])
+        
+
+    }  
     //@ts-ignore
     update(time, delta) { //delta 16.666 @ 60fps
-        if(this.keyboard.D.isDown === true) {
-            this.character.x += 64 * (delta / 1000);
+
+        this.physics.world.collide(this.character, this.assassin, () => {})
+
+
+        // Keys
+        if (this.keyboard.D.isDown) {
+            this.character.setVelocityX(128)
             this.character.play("right", true) // animation - press key start animation
-        }
-        if(this.keyboard.A.isDown === true) {
-            this.character.x -= 64 * (delta / 1000);
+        } else if (this.keyboard.A.isDown) {
+            this.character.setVelocityX(-128)
             this.character.play("left", true)
+        } else {
+            this.character.setVelocityX(0)
+            if (this.keyboard.A.isDown && this.keyboard.D.isDown) {
+                this.character.anims.stop();
+            }
         }
-        if(this.keyboard.W.isDown === true) {
-            this.character.y -= 64 * (delta / 1000);
+        if(this.keyboard.W.isDown) {
+            this.character.setVelocityY(-128)
             this.character.play("up", true)
         }
-        if(this.keyboard.S.isDown === true) {
-            this.character.y += 64 * (delta / 1000);
+        else if(this.keyboard.S.isDown) {
+            this.character.setVelocityY(128)
             this.character.play("down", true)
+        } else {
+            this.character.setVelocityY(0)
+            if((this.keyboard.W.isDown && this.keyboard.S.isDown)) {
+                this.character.anims.stop();
+            }
         }
+
     }
 }

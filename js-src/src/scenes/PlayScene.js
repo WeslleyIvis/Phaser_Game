@@ -35,16 +35,14 @@ export class PlayScene extends Phaser.Scene {
         this.spriteAnimationMove('left', 6, 'characters', 'samira-left', 0, 2, 0);
         this.spriteAnimationMove('right', 6, 'characters', 'samira-right', 0, 2, 0);
         this.effectAnimation("magic", 2000, 'magicEffect', 'magic', 0, 60, true, true);
-        this.load.image("tiles", "./assets/maps/texture.png");
-        this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
+        this.load.image("terrain", "./assets/maps/texture.png");
+        this.load.tilemapTiledJSON("mappy", "./assets/maps/mappy.json");
     }
     create() {
-        var _a;
         // add a sprite to window, (x, y, texture, atlas)
         this.character = this.physics.add.sprite(100, 100, "characters", "samira-front1");
         this.character.setSize(30, 50).setOffset(10, 20);
         this.assassin = this.physics.add.sprite(200, 200, "enemies", "assassin-front1");
-        this.character.setCollideWorldBounds(true);
         //@ts-ignore
         window.character = this.character;
         // Create keyboards && events 
@@ -58,30 +56,21 @@ export class PlayScene extends Phaser.Scene {
                 });
             }
         });
-        // Create map
-        //const map = this.make.tilemap({key: "map"})
-        const map = this.add.tilemap("map");
-        const tileset = map.addTilesetImage("aseets", "tiles");
+        let mappy = this.add.tilemap("mappy");
+        let terrain = mappy.addTilesetImage("terrain_atlas", "terrain");
         // Layers
-        const ground = (_a = map.createLayer("ground", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-1);
-        const objcollider = map.createLayer("objcollider", tileset, 0, 0);
-        const objabove = map.createLayer("objabove", tileset, 0, 0);
-        // Map Collision
-        this.physics.add.collider(this.character, objcollider);
-        this.physics.add.collider(this.assassin, objcollider);
-        // By tile property
-        objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collision: true, objectgroup: { collision: { objects: { collision: true } } } });
+        let botLayer = mappy.createLayer("f0", [terrain], 0, 0);
     }
     //@ts-ignore
     update(time, delta) {
         this.physics.world.collide(this.character, this.assassin, () => { });
         // Keys
         if (this.keyboard.D.isDown) {
-            this.character.setVelocityX(128);
+            this.character.setVelocityX(64);
             this.character.play("right", true); // animation - press key start animation
         }
         else if (this.keyboard.A.isDown) {
-            this.character.setVelocityX(-128);
+            this.character.setVelocityX(-64);
             this.character.play("left", true);
         }
         else {
@@ -91,11 +80,11 @@ export class PlayScene extends Phaser.Scene {
             }
         }
         if (this.keyboard.W.isDown) {
-            this.character.setVelocityY(-128);
+            this.character.setVelocityY(-64);
             this.character.play("up", true);
         }
         else if (this.keyboard.S.isDown) {
-            this.character.setVelocityY(128);
+            this.character.setVelocityY(64);
             this.character.play("down", true);
         }
         else {
