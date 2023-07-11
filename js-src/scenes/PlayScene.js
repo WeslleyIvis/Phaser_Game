@@ -70,7 +70,9 @@ export class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.character, objcollider);
         this.physics.add.collider(this.assassin, objcollider);
         // By tile property
-        objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collision: true, objectgroup: { collision: { objects: { collision: true } } } });
+        objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collision: true });
+        // By tile index
+        objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollision([]);
     }
     //@ts-ignore
     update(time, delta) {
