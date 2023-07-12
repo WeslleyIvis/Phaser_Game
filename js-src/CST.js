@@ -14,5 +14,8 @@ export const CST = {
         BLUEBIRD: "bluebirdFlying.png",
         ENEMIES: "enemies.png",
         CHARACTER: "spritesheet.png",
+    },
+    KEYBOARD: {
+        KEYS: "W, S, A, D, SPACE"
     }
 };

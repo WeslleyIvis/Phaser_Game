@@ -9,7 +9,6 @@ export default class CharacterSprite extends Phaser.Physics.Arcade.Sprite {
         this.setOrigin(0, 0);
         scene.physics.world.enableBody(this);
         this.setImmovable(true);
-
         this.hp = 10;
     }
 }

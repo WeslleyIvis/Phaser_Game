@@ -24,13 +24,13 @@ export class PlayScene extends Phaser.Scene {
         this.load.image("tiles", "./assets/maps/texture.png");
         this.load.image("itens", "./assets/maps/itens.png");
 
-        this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
+        this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
     }
 
     create() {
-        // add a sprite to window, (x, y, texture, atlas)
-        const bluebird = new Sprite(this, 300, 300, CST.SPRITE.BLUEBIRD);
-        this.character = new CharacterSprite(this, 100, 100, CST.SPRITE.CHARACTER)
+        // CREATE SPRITES
+        const bluebird = new Sprite(this, 500, 300, CST.SPRITE.BLUEBIRD).play("walk");
+        this.character = new CharacterSprite(this, 500, 500, CST.SPRITE.CHARACTER)
         this.hoded = this.physics.add.sprite(200, 200, "enemies", "assassin-front1")
         this.atackes = this.physics.add.group();
         
@@ -43,10 +43,11 @@ export class PlayScene extends Phaser.Scene {
 
         // Create keyboards && events 
         //@ts-ignore
-        this.keyboard = this.input.keyboard.addKeys("W, S, A, D")
+        this.keyboard = this.input.keyboard.addKeys(CST.KEYBOARD.KEYS)
+
         this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {        
             if(pointer.isDown) { //is clicking
-                let magic = this.physics.add.sprite(pointer.x, pointer.y, "magicEffect", "magic1").play("magic").setSize(50,50).setOffset(20, 35)
+                let magic = this.physics.add.sprite(pointer.worldX, pointer.worldY, "magicEffect", "magic1").play("magic").setSize(50,50).setOffset(20, 35)
                 this.atackes.add(magic);
                 magic.on('animationcomplete', () => {
                     magic.destroy();
@@ -54,20 +55,29 @@ export class PlayScene extends Phaser.Scene {
             }
         })
 
-        // Collision
+        // COLLISION
         //this.physics.world.collide(this.character, this.hoded, () => {})
         this.enemies = this.physics.add.group({immovable: true});
         this.enemies.add(this.hoded)
+        this.enemies.add(bluebird)
 
+        //@ts-ignore
+        this.enemies.children.iterate(enemy => {       
+            console.log(enemy)
+            this.physics.add.collider(this.enemies, enemy, () => {
+                enemy.destroy();
+            })
+        })
+        
         // adiciona colisão para as bordas da tela
         this.character.setCollideWorldBounds(true);
 
-
         this.physics.world.addCollider(this.character, this.enemies, (char, enemey) => {
             if(char.hp <= 0) {
-                char.destroy();
+              //  char.destroy();
             }
-            enemey.destroy();
+            console.log('colidiu')
+            //enemey.destroy();
         })
 
         this.physics.world.addCollider(this.atackes, this.enemies, (attack, enemey) => {
@@ -75,15 +85,15 @@ export class PlayScene extends Phaser.Scene {
             enemey.destroy();
         })
 
-        // Create map
+        // CREATE MAP
         //const map = this.make.tilemap({key: "map"})
         const map = this.add.tilemap("map")
-        const tileset: Phaser.Tilemaps.Tileset = map.addTilesetImage("texture", "tiles")
+        const tileset: Phaser.Tilemaps.Tileset  = map.addTilesetImage("texture", "tiles") as Phaser.Tilemaps.Tileset
         const item = this.add.tilemap("map")
         const itemset = item.addTilesetImage("itens", "itens")
 
         
-        // Layers
+        // MAP LAYERS
         const ground = map.createLayer("floor", tileset, 0, 0)?.setDepth(-1)
         const shadow = map.createLayer("shadow", tileset, 0, 0)
         const objcollider = map.createLayer("collider", tileset, 0, 0)
@@ -91,18 +101,18 @@ export class PlayScene extends Phaser.Scene {
         
         const sword = item.createLayer("swords", itemset, 0, 0)
         
-        // Map Collision
+        // MAP COLLISION
         this.physics.add.collider(this.character, objcollider)
-        this.physics.add.collider(this.hoded, objcollider)
+        this.physics.add.collider(this.enemies, objcollider);
 
             // By tile property
         objcollider?.setCollisionByProperty({collider: true})
         
-        // By tile index
-        sword?.setCollision([739])
+            // By tile index
+        sword?.setCollision([746])
         objcollider?.setCollision([418])
         
-        // Map Events 
+        // MAP EVENTS
             //By location
         sword?.setTileLocationCallback(3, 5, 4, 2, (tile: Phaser.Tilemaps.TilemapLayer) => {
                 alert('pass the sword ' + {title: tile})
@@ -116,18 +126,39 @@ export class PlayScene extends Phaser.Scene {
             console.log("alo")
         }, this)
 
-            // Interactive items from object layer
-        let origin = map.createFromObjects("itens", {key: CST.SPRITE.ENEMIES}).map((sprite) => {
-            sprite.setInteractive();
-            
+            // INTERACTIVE ITEM FROM OBJECT LAYER
+        let origin = map.createFromObjects("enemies", {key: CST.SPRITE.BLUEBIRD}).map((sprite) => {
+           this.enemies.add(sprite)
+           sprite.setInteractive();
+           
         })
+
+        this.input.on("gameobjectdown", (pointer, obj) => {
+            obj.destroy()
+        })
+
+        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+            //@ts-ignore
+            let tile = map.getTileAt(map.worldToTileX(pointer.x), map.worldToTileY(pointer.y));
+
+            if(tile) console.log(tile)
+        })
+
+        // Camera
+
+        this.cameras.main.startFollow(this.character);
+        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+
+        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+        this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
+
     }  
     //@ts-ignore
     update(time, delta) { //delta 16.666 @ 60fps
 
-        for(let i = 0; i < this.enemies.getChildren().length; i++) {
-            this.physics.accelerateToObject(this.enemies.getChildren()[i], this.character)
-        }
+        // for(let i = 0; i < this.enemies.getChildren().length; i++) {
+        //     this.physics.accelerateToObject(this.enemies.getChildren()[i], this.character)
+        // }
 
         this.character.setVelocityX(0)
         this.character.setVelocityY(0)
@@ -154,5 +185,9 @@ export class PlayScene extends Phaser.Scene {
         } else if(this.character.body?.velocity.y as number < 0) {
             this.character.play("up", true)
         } 
+
+        if(this.keyboard.SPACE.isDown) {
+            console.log('oloco meo')
+        }
     }
 }
