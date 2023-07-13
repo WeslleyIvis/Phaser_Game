@@ -12,7 +12,7 @@ export const CST = {
   },
   SPRITE: {
     BLUEBIRD: "bluebirdFlying.png",
-  ENEMIES: "enemies.png",
+    ENEMIES: "enemies.png",
     CHARACTER: "spritesheet.png",
   },
   KEYBOARD: {
