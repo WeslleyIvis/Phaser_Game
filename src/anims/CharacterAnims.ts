@@ -1,4 +1,5 @@
-import Phaser from "phaser";
+//@ts-ignore
+import Phaser from "../../lib/phaser";
 
 const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     anims.create({
@@ -46,6 +47,6 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
     })    
 }
 
-export {
+export  {
     createCharacterAnims
 }

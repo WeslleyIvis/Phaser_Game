@@ -1,3 +1,5 @@
+import Phaser from "../../lib/phaser"
+
 const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
     anims.create({
         key: 'assassin-down',

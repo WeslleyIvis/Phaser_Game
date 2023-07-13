@@ -1,6 +1,7 @@
 import { CST } from "../CST";
 import { createHodedAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
+
 import CharacterSprite from "../actions/CharacterSprite";
 import Sprite from "../actions/Sprite";
 import Hoded from "../enemies/Hoded";
@@ -29,8 +30,7 @@ export class PlayScene extends Phaser.Scene {
     create() {
         // CREATE SPRITES
         const bluebird = new Sprite(this, 500, 300, CST.SPRITE.BLUEBIRD).play("walk");
-        this.character = new CharacterSprite(this, 500, 500, "characters")
-        
+        this.character = new CharacterSprite(this, 500, 500, "characters")     
         
         this.atackes = this.physics.add.group();
 
@@ -38,7 +38,7 @@ export class PlayScene extends Phaser.Scene {
             classType: Hoded
         })
 
-        hodeds.get(400, 200, 'enemies', 0)
+        hodeds.get(400, 400, 'enemies', 0)
         
         // Set small hit box
         .setSize(30,50).setOffset(10, 20);
