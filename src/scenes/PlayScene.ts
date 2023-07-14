@@ -1,26 +1,23 @@
 import { CST } from "../CST";
 import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import Character from "../character/Character";
+import "../characters/Samira";
 import Bat from "../enemies/Bat";
 import Hoded from "../enemies/Hoded";
 import { createSpellBubleAnims } from "../anims/SpellsAnims";
 export class PlayScene extends Phaser.Scene {
+    private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     character!: Phaser.Physics.Arcade.Sprite;
-    hoded!: Phaser.Physics.Arcade.Sprite;
-    enemies!: Phaser.Physics.Arcade.Group;
     atackes!: Phaser.Physics.Arcade.Group;
-    keyboard!: {[index: string] : Phaser.Input.Keyboard.Key};
+    //keyboard!: {[index: string] : Phaser.Input.Keyboard.Key};
+
     constructor() {
         super({key: CST.SCENES.PLAY})
     }
 
     preload() {
         //console.log(this.textures.list)     
-        createSpellBubleAnims(this.anims)
-        createCharacterAnims(this.anims)
-        createHodedAnims(this.anims)
-        createBatAnims(this.anims)
+        this.cursor = this.input.keyboard?.createCursorKeys() as Phaser.Types.Input.Keyboard.CursorKeys;
 
         this.load.image("tiles", "./assets/maps/textures.png");
         this.load.image("itens", "./assets/maps/itens.png");
@@ -28,8 +25,12 @@ export class PlayScene extends Phaser.Scene {
     }
 
     create() {
-        // CREATE SPRITES
-        this.character = new Character(this, 500, 500, "characters", 'samira-front1')        
+        createSpellBubleAnims(this.anims)
+        createCharacterAnims(this.anims)
+        createHodedAnims(this.anims)
+        createBatAnims(this.anims)
+
+        this.character = this.add.samira(500, 500, 'characters')
         this.atackes = this.physics.add.group();
         const hodeds = this.physics.add.group({
             classType: Hoded,
@@ -77,7 +78,7 @@ export class PlayScene extends Phaser.Scene {
         const objcollider = map.createLayer("collider", tileset, 0, 0)
         const objabove = map.createLayer("above", tileset, 0, 0)
 
-        this.input.on("gameobjectdown", (pointer, obj) => {
+        this.input.on("gameobjectdown", (pointer: Phaser.Input.Pointer, obj: Phaser.GameObjects.GameObject) => {
             obj.destroy()
         })
 
@@ -103,34 +104,8 @@ export class PlayScene extends Phaser.Scene {
     //@ts-ignore
     update(time, delta) { //delta 16.666 @ 60fps
 
-        this.character.setVelocityX(0)
-        this.character.setVelocityY(0)
-        // Keys
-        if (this.keyboard.D.isDown) {
-            this.character.setVelocityX(128)
-        } else if (this.keyboard.A.isDown) {
-            this.character.setVelocityX(-128)
+        if(this.character) {
+            this.character.update(this.cursor)
         }
-
-        if(this.keyboard.W.isDown) {
-            this.character.setVelocityY(-128)        
-        }
-        else if(this.keyboard.S.isDown) {
-            this.character.setVelocityY(128)
-        }
-
-        if(this.character.body?.velocity.x as number > 0) {
-            this.character.play("right", true) // Animation sprite
-        } else if(this.character.body?.velocity.x as number < 0) {
-            this.character.play("left", true)
-        } else if(this.character.body?.velocity.y as number > 0) {
-            this.character.play("down", true)
-        } else if(this.character.body?.velocity.y as number < 0) {
-            this.character.play("up", true)
-        } 
-
-        // if(this.keyboard.SPACE.isDown) {
-        //     console.log('oloco meo')
-        // }
     }
 }
