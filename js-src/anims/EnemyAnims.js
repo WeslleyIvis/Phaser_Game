@@ -1,7 +1,4 @@
-//@ts-ignore
-import Phaser from "lib/phaser"
-
-const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
+const createHodedAnims = (anims) => {
     anims.create({
         key: 'assassin-down',
         frameRate: 6,
@@ -11,8 +8,7 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'assassin-up',
         frameRate: 6,
@@ -22,8 +18,7 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'assassin-left',
         frameRate: 6,
@@ -33,8 +28,7 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'assassin-right',
         frameRate: 6,
@@ -44,10 +38,9 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    }) 
-}
-
-const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
+    });
+};
+const createBatAnims = (anims) => {
     anims.create({
         key: 'bat-front',
         frameRate: 6,
@@ -57,8 +50,7 @@ const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'bat-back',
         frameRate: 6,
@@ -68,8 +60,7 @@ const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'bat-left',
         frameRate: 6,
@@ -79,8 +70,7 @@ const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'bat-right',
         frameRate: 6,
@@ -90,10 +80,6 @@ const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-}
-
-export {
-    createHodedAnims,
-    createBatAnims
-}
+    });
+};
+export { createHodedAnims, createBatAnims };

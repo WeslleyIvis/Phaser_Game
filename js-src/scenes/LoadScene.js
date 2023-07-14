@@ -28,7 +28,6 @@ export class LoadScene extends Phaser.Scene {
         }
     }
     preload() {
-        //this.load.spritesheet("character", "./assets/sprites/spritesheet.png", {frameWidth: 48, frameHeight: 72})
         // Load Atlas
         this.load.atlas("characters", "./assets/sprites/spritesheet.png", "./assets/sprites/sprites.json");
         this.load.atlas("enemies", "./assets/sprites/enemies.png", "./assets/sprites/enemies.json");

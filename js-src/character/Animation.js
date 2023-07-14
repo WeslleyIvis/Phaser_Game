@@ -1,10 +1,8 @@
-export class Animation  {
-    scene: Phaser.Scene;
-    constructor(scene: Phaser.Scene) {
-        this.scene = scene; 
+export class Animation {
+    constructor(scene) {
+        this.scene = scene;
     }
-
-    spriteAnimationMove(key: string, frame: number, name: string, prefix: string, start: number, end: number, repeat: number) {
+    spriteAnimationMove(key, frame, name, prefix, start, end, repeat) {
         this.scene.anims.create({
             key: key,
             frameRate: frame,
@@ -14,10 +12,9 @@ export class Animation  {
                 start: start,
                 end: end
             }),
-        })
+        });
     }
-
-    effectAnimation(key: string, duration: number, name: string, prefix: string, start: number, end: number, showOnStart: boolean, hideOnComplete: boolean) {
+    effectAnimation(key, duration, name, prefix, start, end, showOnStart, hideOnComplete) {
         this.scene.anims.create({
             key: key,
             duration: duration,
@@ -28,6 +25,6 @@ export class Animation  {
             }),
             showOnStart: showOnStart,
             hideOnComplete: hideOnComplete
-        })
+        });
     }
 }

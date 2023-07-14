@@ -1,7 +1,4 @@
-//@ts-ignore
-import Phaser from "../../lib/phaser";
-
-const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
+const createCharacterAnims = (anims) => {
     anims.create({
         key: 'down',
         frameRate: 6,
@@ -11,8 +8,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'up',
         frameRate: 6,
@@ -22,8 +18,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'left',
         frameRate: 6,
@@ -33,8 +28,7 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })
-
+    });
     anims.create({
         key: 'right',
         frameRate: 6,
@@ -44,9 +38,6 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
             start: 0,
             end: 2
         })
-    })    
-}
-
-export  {
-    createCharacterAnims
-}
+    });
+};
+export { createCharacterAnims };
