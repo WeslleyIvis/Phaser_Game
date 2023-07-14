@@ -1,4 +1,5 @@
-import Phaser from "../../lib/phaser"
+//@ts-ignore
+import Phaser from "lib/phaser"
 
 const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
     anims.create({
@@ -46,6 +47,53 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
     }) 
 }
 
+const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
+    anims.create({
+        key: 'bat-front',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'bat-front',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'bat-back',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'bat-back',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'bat-left',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'bat-left',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'bat-right',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'bat-right',
+            start: 0,
+            end: 2
+        })
+    })
+}
+
 export {
-    createHodedAnims
+    createHodedAnims,
+    createBatAnims
 }
