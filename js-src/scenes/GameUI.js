@@ -15,10 +15,11 @@ export default class GameUI extends Phaser.Scene {
             },
             quantity: 3
         });
-        const lifebg = this.add.rectangle(50, 10, 50, 10, 0x000000);
-        const lifebar = this.add.rectangle(52, 12, 45, 8, 0xff0000, .8);
+        //@ts-ignore
         hearts.children.iterate((heart, index) => {
             heart.x = 10 + (index * 30);
         });
+        const lifebg = this.add.rectangle(50, 10, 50, 10, 0x000000);
+        const lifebar = this.add.rectangle(52, 12, 45, 8, 0xff0000, .8);
     }
 }
