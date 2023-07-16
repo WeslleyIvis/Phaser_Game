@@ -1,5 +1,5 @@
 import { CST } from '../CST';
-export class MenuScene extends Phaser.Scene {
+export default class MenuScene extends Phaser.Scene {
     constructor() {
         super({
             key: CST.SCENES.MENU,
