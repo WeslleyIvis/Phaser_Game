@@ -2,7 +2,8 @@ export const CST = {
   SCENES: {
     LOAD: 'LOAD',
     MENU: 'MENU',
-    PLAY: 'PLAY'
+    PLAY: 'PLAY',
+    GAME_UI: 'GAME-UI'
   },
   IMAGE: {
     BG_MENU: "bg-menu.png",
@@ -16,6 +17,11 @@ export const CST = {
     CHARACTER: "spritesheet.png",
   },
   KEYBOARD: {
-    KEYS: "W, S, A, D, SPACE"
+    KEYS: {
+      up: Phaser.Input.Keyboard.KeyCodes.W, 
+      left: Phaser.Input.Keyboard.KeyCodes.A, 
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    }
   }
 };
