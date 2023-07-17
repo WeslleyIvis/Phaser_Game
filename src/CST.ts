@@ -7,6 +7,9 @@ export const CST = {
   },
   IMAGE: {
     BG_MENU: "bg-menu.png",
+    HEART_FULL: 'heart_full.png',
+    HEART_EMPTY: 'heart_empty.png',
+    LIFE_BAR: 'lifebar.png'
   },
   AUDIO: {
     TITLE: "title-song.mp3"
@@ -14,7 +17,7 @@ export const CST = {
   SPRITE: {
     BLUEBIRD: "bluebirdFlying.png",
     ENEMIES: "enemies.png",
-    CHARACTER: "spritesheet.png",
+    CHARACTER: "characters.png",
   },
   KEYBOARD: {
     KEYS: {
