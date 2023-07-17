@@ -5,23 +5,35 @@ var HealthState;
     HealthState[HealthState["DAMAGE"] = 1] = "DAMAGE";
 })(HealthState || (HealthState = {}));
 export default class Samira extends Phaser.Physics.Arcade.Sprite {
+    get health() {
+        return this._health;
+    }
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
         this.healthState = HealthState.IDLE;
         this.damageTime = 0;
+        this._health = 3;
         // scene.add.existing(this)
         // scene.physics.world.enableBody(this);
-        this.setFrame('samira-front1');
+        this.setFrame('char_670');
         this.hp = 10;
         this.velocity = 128;
     }
     handleDamege(dir) {
-        if (this.healthState === HealthState.DAMAGE)
+        if (this._health <= 0) {
             return;
+        }
+        if (this.healthState === HealthState.DAMAGE) {
+            return;
+        }
         this.setVelocity(dir.x, dir.y);
         this.setTint(0xff0000);
         this.healthState = HealthState.DAMAGE;
         this.damageTime = 0;
+        --this._health;
+        if (this._health <= 0) {
+            // TODO: die
+        }
     }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
