@@ -1,16 +1,20 @@
 import { CST } from "../CST";
 import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import "../characters/Samira";
+import { createSpellBubleAnims } from "../anims/SpellsAnims";
+
+import { sceneEvents } from "../events/EventCenter";
+
+import "../characters/Character";
+import Character from "../characters/Character";
+
 import Bat from "../enemies/Bat";
 import Hoded from "../enemies/Hoded";
-import { createSpellBubleAnims } from "../anims/SpellsAnims";
-import Samira from "../characters/Samira";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
-    private character!: Samira;
+    private character!: Character;
 
-    private bats!: Phaser.Physics.Arcade.Group;
+    private playerCollider?: Phaser.Physics.Arcade.Collider;
 
     atackes!: Phaser.Physics.Arcade.Group;
     constructor() {
@@ -24,7 +28,7 @@ export default class PlayScene extends Phaser.Scene {
 
         this.load.image("tiles", "./assets/maps/textures.png");
         this.load.image("itens", "./assets/maps/itens.png");
-        this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
+        this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
 
     create() {
@@ -35,7 +39,7 @@ export default class PlayScene extends Phaser.Scene {
         createHodedAnims(this.anims)
         createBatAnims(this.anims)
 
-        this.character = this.add.samira(500, 500, 'characters').setSize(30,50).setOffset(10, 20)
+        this.character = this.add.character(700, 100, 'characters').setSize(30,50).setOffset(10, 20).setScale(.9)
 
         this.atackes = this.physics.add.group();
 
@@ -105,7 +109,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.character, objcollider as Phaser.Tilemaps.TilemapLayer)
         this.physics.add.collider(bats, objcollider as Phaser.Tilemaps.TilemapLayer);
 
-        this.physics.add.collider(bats, this.character, this.handlePlayerBatCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.playerCollider = this.physics.add.collider(bats, this.character, this.handlePlayerBatCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
     }  
 
     private handlePlayerBatCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
@@ -118,6 +122,12 @@ export default class PlayScene extends Phaser.Scene {
 
         this.character.handleDamege(dir)
 
+        sceneEvents.emit('player-health-changed', this.character.health)
+
+        if(this.character.health <= 0)
+        {
+            this.playerCollider?.destroy();
+        }
     }
 
     

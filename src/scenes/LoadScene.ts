@@ -38,7 +38,7 @@ export default class LoadScene extends Phaser.Scene {
 
   preload() {
     // Load Atlas
-    this.load.atlas("characters", "./assets/sprites/spritesheet.png", "./assets/sprites/sprites.json")
+    this.load.atlas("characters", "./assets/sprites/characters.png", "./assets/sprites/characters.json")
     this.load.atlas("enemies", "./assets/sprites/enemies.png", "./assets/sprites/enemies.json")
     this.load.atlas("magicEffect", "./assets/sprites/magicEffect.png", "./assets/sprites/magicEffect.json")
     
