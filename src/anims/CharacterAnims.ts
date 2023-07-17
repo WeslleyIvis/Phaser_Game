@@ -7,9 +7,9 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
-            prefix: 'samira-front',
-            start: 0,
-            end: 2
+            prefix: 'char_',
+            start: 669,
+            end: 671
         })
     })
 
@@ -18,9 +18,9 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
-            prefix: 'samira-back',
-            start: 0,
-            end: 2
+            prefix: 'char_',
+            start: 705,
+            end: 707
         })
     })
 
@@ -29,9 +29,9 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
-            prefix: 'samira-left',
-            start: 0,
-            end: 2
+            prefix: 'char_',
+            start: 681,
+            end: 683
         })
     })
 
@@ -40,9 +40,20 @@ const createCharacterAnims = (anims: Phaser.Animations.AnimationManager) => {
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
-            prefix: 'samira-right',
-            start: 0,
-            end: 2
+            prefix: 'char_',
+            start: 693,
+            end: 695
+        })
+    })    
+
+    anims.create({
+        key: 'faint',
+        frameRate: 6,
+        repeat: 0,
+        frames: anims.generateFrameNames('characters', {
+            prefix: 'char_',
+            start: 429,
+            end: 431
         })
     })    
 }
