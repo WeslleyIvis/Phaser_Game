@@ -43,7 +43,11 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
  
     // Cria colisão do objeto com os colidiveis do mapa
     private handleTileColision(go: Phaser.GameObjects.GameObject, tile: Phaser.Tilemaps.Tile) {
-        if(go !== this) return
+        if(go !== this)
+        {
+            console.dir(go)
+            return
+        } 
 
         this.direction = randomDireciton(this.direction)
     }
