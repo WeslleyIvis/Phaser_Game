@@ -8,7 +8,6 @@ var Direction;
 export default class Hoded extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
-        this.anims.play('assassin-down');
     }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);

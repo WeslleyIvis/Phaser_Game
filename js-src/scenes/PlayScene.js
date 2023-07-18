@@ -1,7 +1,7 @@
 import { CST } from "../CST";
 import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { createSpellBubleAnims } from "../anims/SpellsAnims";
+import { createSpells } from "../anims/SpellsAnims";
 import { sceneEvents } from "../events/EventCenter";
 import "../characters/Character";
 import Bat from "../enemies/Bat";
@@ -19,14 +19,18 @@ export default class PlayScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
     create() {
-        var _a, _b;
+        var _a, _b, _c;
         this.scene.run(CST.SCENES.GAME_UI);
-        createSpellBubleAnims(this.anims);
+        createSpells(this.anims);
         createCharacterAnims(this.anims);
         createHodedAnims(this.anims);
         createBatAnims(this.anims);
-        this.character = this.add.character(700, 100, 'characters').setSize(30, 50).setOffset(10, 20).setScale(.9);
-        this.atackes = this.physics.add.group();
+        this.atackes = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Image,
+        });
+        this.character = this.add.character(700, 100, 'characters');
+        this.character.setScale(0.9);
+        this.character.setAtackes(this.atackes);
         const hodeds = this.physics.add.group({
             classType: Hoded,
             createCallback: (go) => {
@@ -34,7 +38,7 @@ export default class PlayScene extends Phaser.Scene {
                 hodedgo.setSize(30, 50).setOffset(10, 20);
             }
         });
-        const bats = this.physics.add.group({
+        this.bats = this.physics.add.group({
             classType: Bat,
             createCallback: (go) => {
                 const batgo = go;
@@ -42,46 +46,42 @@ export default class PlayScene extends Phaser.Scene {
                     batgo.body.onCollide = true;
             }
         });
-        hodeds.get(400, 400, 'enemies', 'ghost-front1');
-        bats.get(500, 500, 'enemies', 'bat-front1');
-        bats.get(500, 600, 'enemies', 'bat-front1');
-        bats.get(500, 700, 'enemies', 'bat-front1');
-        //@ts-ignore
-        window.character = this.character;
-        this.input.on("pointermove", (pointer) => {
-            if (pointer.isDown) { //is clicking
-                let magic = this.physics.add.sprite(pointer.worldX, pointer.worldY, "magicEffect", "magic1").play("spellBuble").setSize(50, 50).setOffset(20, 35);
-                this.atackes.add(magic);
-                magic.on('animationcomplete', () => {
-                    magic.destroy();
-                });
-            }
-        });
+        hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1');
+        for (let x = 0; x < 5; x++) {
+            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(400, 900), 'enemies', 'bat-front1');
+        }
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
         const ground = (_a = map.createLayer("floor", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-2);
         const groundAbove = (_b = map.createLayer('floor_above', tileset, 0, 0)) === null || _b === void 0 ? void 0 : _b.setDepth(-1);
         const shadow = map.createLayer("shadow", tileset, 0, 0);
         const objcollider = map.createLayer("collider", tileset, 0, 0);
-        const objabove = map.createLayer("above", tileset, 0, 0);
+        const objabove = (_c = map.createLayer("above", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(1);
         this.input.on("gameobjectdown", (pointer, obj) => {
             obj.destroy();
-        });
-        this.input.on("pointerdown", (pointer) => {
-            //@ts-ignore
-            let tile = map.getTileAt(map.worldToTileX(pointer.x), map.worldToTileY(pointer.y));
-            if (tile)
-                console.log(tile);
         });
         this.cameras.main.startFollow(this.character);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1);
         objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collider: true });
-        //this.physics.world.addCollider(this.character, bats)
         this.physics.add.collider(this.character, objcollider);
-        this.physics.add.collider(bats, objcollider);
-        this.playerCollider = this.physics.add.collider(bats, this.character, this.handlePlayerBatCollision, undefined, this);
+        this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
+        this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision, undefined, this);
+        this.physics.add.collider(this.bats, objcollider);
+        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerBatCollision, undefined, this);
+    }
+    handleAtackWallCollision(obj1, obj2) {
+        this.atackes.killAndHide(obj1);
+        obj1.destroy();
+    }
+    handleAtackeCollision(obj1, obj2) {
+        console.dir(obj1);
+        console.dir(obj2);
+        this.bats.killAndHide(obj1);
+        this.bats.killAndHide(obj2);
+        obj2.destroy();
+        obj1.destroy();
     }
     handlePlayerBatCollision(obj1, obj2) {
         var _a;

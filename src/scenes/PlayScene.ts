@@ -1,7 +1,7 @@
 import { CST } from "../CST";
 import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
-import { createSpellBubleAnims } from "../anims/SpellsAnims";
+import { createSpells } from "../anims/SpellsAnims";
 
 import { sceneEvents } from "../events/EventCenter";
 
@@ -13,10 +13,13 @@ import Hoded from "../enemies/Hoded";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     private character!: Character;
+    
+    private atackes!: Phaser.Physics.Arcade.Group
 
-    private playerCollider?: Phaser.Physics.Arcade.Collider;
+    private bats!: Phaser.Physics.Arcade.Group
 
-    atackes!: Phaser.Physics.Arcade.Group;
+    private playerCollider?: Phaser.Physics.Arcade.Collider
+
     constructor() {
         super({key: CST.SCENES.PLAY})
     }
@@ -34,14 +37,19 @@ export default class PlayScene extends Phaser.Scene {
     create() {
         this.scene.run(CST.SCENES.GAME_UI)
 
-        createSpellBubleAnims(this.anims)
+        createSpells(this.anims)
         createCharacterAnims(this.anims)
         createHodedAnims(this.anims)
         createBatAnims(this.anims)
 
-        this.character = this.add.character(700, 100, 'characters').setSize(30,50).setOffset(10, 20).setScale(.9)
+        this.atackes = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Image,
+        });
 
-        this.atackes = this.physics.add.group();
+        this.character = this.add.character(700, 100, 'characters')
+        this.character.setScale(0.9)
+        this.character.setAtackes(this.atackes)
+        
 
         const hodeds = this.physics.add.group({
             classType: Hoded,
@@ -51,7 +59,7 @@ export default class PlayScene extends Phaser.Scene {
             }
         })
 
-        const bats = this.physics.add.group({
+        this.bats = this.physics.add.group({
             classType: Bat,
             createCallback: (go) => {
                 const batgo = go as Bat
@@ -60,23 +68,13 @@ export default class PlayScene extends Phaser.Scene {
             }
         })
 
-        hodeds.get(400, 400, 'enemies', 'ghost-front1')
-        bats.get(500, 500, 'enemies', 'bat-front1')
-        bats.get(500, 600, 'enemies', 'bat-front1')
-        bats.get(500, 700, 'enemies', 'bat-front1')
-              
-        //@ts-ignore
-        window.character = this.character
-      
-        this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {        
-            if(pointer.isDown) { //is clicking
-                let magic = this.physics.add.sprite(pointer.worldX, pointer.worldY, "magicEffect", "magic1").play("spellBuble").setSize(50,50).setOffset(20, 35)
-                this.atackes.add(magic);
-                magic.on('animationcomplete', () => {
-                    magic.destroy();
-                })
-            }
-        })
+        hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1')
+        
+
+        for(let x = 0; x < 5; x++)
+        {
+            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(400, 900), 'enemies', 'bat-front1')
+        }
 
         const map = this.add.tilemap("map")
         const tileset: Phaser.Tilemaps.Tileset  = map.addTilesetImage("textures", "tiles") as Phaser.Tilemaps.Tileset
@@ -85,19 +83,12 @@ export default class PlayScene extends Phaser.Scene {
         const groundAbove = map.createLayer('floor_above', tileset, 0, 0)?.setDepth(-1)
         const shadow = map.createLayer("shadow", tileset, 0, 0)
         const objcollider = map.createLayer("collider", tileset, 0, 0)
-        const objabove = map.createLayer("above", tileset, 0, 0)
+        const objabove = map.createLayer("above", tileset, 0, 0)?.setDepth(1)
 
         this.input.on("gameobjectdown", (pointer: Phaser.Input.Pointer, obj: Phaser.GameObjects.GameObject) => {
             obj.destroy()
         })
 
-        this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-            //@ts-ignore
-            let tile = map.getTileAt(map.worldToTileX(pointer.x), map.worldToTileY(pointer.y));
-
-            if(tile) console.log(tile)
-        })
-        
         this.cameras.main.startFollow(this.character);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
@@ -105,12 +96,29 @@ export default class PlayScene extends Phaser.Scene {
 
         objcollider?.setCollisionByProperty({collider: true})
         
-        //this.physics.world.addCollider(this.character, bats)
         this.physics.add.collider(this.character, objcollider as Phaser.Tilemaps.TilemapLayer)
-        this.physics.add.collider(bats, objcollider as Phaser.Tilemaps.TilemapLayer);
+        
+        this.physics.add.collider(this.atackes, objcollider as Phaser.Tilemaps.TilemapLayer, this.handleAtackWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        
+        this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
-        this.playerCollider = this.physics.add.collider(bats, this.character, this.handlePlayerBatCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.physics.add.collider(this.bats, objcollider as Phaser.Tilemaps.TilemapLayer);
+        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerBatCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
     }  
+
+    private handleAtackWallCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+        this.atackes.killAndHide(obj1)
+        obj1.destroy()
+    }
+    
+    private handleAtackeCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+        console.dir(obj1)
+        console.dir(obj2)
+        this.bats.killAndHide(obj1)
+        this.bats.killAndHide(obj2)
+        obj2.destroy()
+        obj1.destroy()
+    }
 
     private handlePlayerBatCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
         const bat = obj2 as Bat
