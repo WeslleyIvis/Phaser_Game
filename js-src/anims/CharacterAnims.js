@@ -1,6 +1,22 @@
 const createCharacterAnims = (anims) => {
     anims.create({
-        key: 'down',
+        key: 'char-idle-down',
+        frames: [{ key: 'characters', frame: 'char_670' }]
+    });
+    anims.create({
+        key: 'char-idle-up',
+        frames: [{ key: 'characters', frame: 'char_706' }]
+    });
+    anims.create({
+        key: 'char-idle-left',
+        frames: [{ key: 'characters', frame: 'char_682' }]
+    });
+    anims.create({
+        key: 'char-idle-right',
+        frames: [{ key: 'characters', frame: 'char_694' }]
+    });
+    anims.create({
+        key: 'char-run-down',
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
@@ -10,7 +26,7 @@ const createCharacterAnims = (anims) => {
         })
     });
     anims.create({
-        key: 'up',
+        key: 'char-run-up',
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
@@ -20,7 +36,7 @@ const createCharacterAnims = (anims) => {
         })
     });
     anims.create({
-        key: 'left',
+        key: 'char-run-left',
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
@@ -30,7 +46,7 @@ const createCharacterAnims = (anims) => {
         })
     });
     anims.create({
-        key: 'right',
+        key: 'char-run-right',
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
@@ -40,7 +56,7 @@ const createCharacterAnims = (anims) => {
         })
     });
     anims.create({
-        key: 'faint',
+        key: 'char-faint',
         frameRate: 6,
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
