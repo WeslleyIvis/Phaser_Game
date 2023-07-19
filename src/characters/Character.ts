@@ -85,11 +85,17 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    private throwAtack() 
+    private throwAtack(scene: Phaser.Scene) 
     {
         if(!this.atackes)
         {
             return 
+        }
+
+        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
+
+        if(!atack) {
+            return
         }
 
         const parts = this.anims.currentAnim?.key.split('-')
@@ -116,9 +122,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                     vec.x = 1
                     break
             }
+            
 
             const angle = vec.angle();
-            const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
 
             atack.setActive(true)
             atack.setVisible(true);
@@ -127,7 +133,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             atack.y += vec.y * 16;
             
             atack.setRotation(angle)
-            atack.setVelocity(vec.x* 300, vec.y * 300)        
+            atack.setVelocity(vec.x * 300, vec.y * 300)        
             
             }
 
@@ -159,19 +165,22 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     /*
         O método update é usado para atualizar o personagem a cada quadro, verificando as teclas pressionadas e ajustando a velocidade e a animação do personagem de acordo.
     */
-    update(cursor: Phaser.Types.Input.Keyboard.CursorKeys): void {
-        
+    update(cursor: Phaser.Types.Input.Keyboard.CursorKeys, scene: Phaser.Scene): void {
         if(this.healthState === HealthState.DAMAGE 
             || this.healthState === HealthState.DEAD) 
             {
                 return
             }
 
-        if(!cursor ) return
+
+
+        if(!cursor ) {
+            return
+        } 
 
         if(Phaser.Input.Keyboard.JustDown(cursor.space))
         {
-            this.throwAtack()
+            this.throwAtack(scene)
             return
         }
 
