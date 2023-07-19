@@ -13,7 +13,7 @@ export default class MenuScene extends Phaser.Scene {
             color: '#00000',
         };
         // Create Imagems
-        this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(.55).setOrigin(0).setDepth(0).setAlpha(0.5);
+        this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(1.2).setOrigin(0).setDepth(0).setAlpha(0.5);
         // Create text Buttons
         let playButton = this.add
             .text(this.renderer.width / 2.3, this.renderer.height / 2.5, '< Play >', defaultCaracter)

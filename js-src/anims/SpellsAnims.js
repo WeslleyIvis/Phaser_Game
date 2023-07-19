@@ -21,5 +21,15 @@ const createSpells = (anims) => {
             end: 9
         }),
     });
+    anims.create({
+        key: 'star',
+        frameRate: 10,
+        repeat: -1,
+        frames: anims.generateFrameNames('magicEffect', {
+            prefix: 'effect_',
+            start: 146,
+            end: 149
+        }),
+    });
 };
 export { createSpells };

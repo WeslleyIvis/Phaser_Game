@@ -26,11 +26,16 @@ export default class PlayScene extends Phaser.Scene {
         createHodedAnims(this.anims);
         createBatAnims(this.anims);
         this.atackes = this.physics.add.group({
-            classType: Phaser.Physics.Arcade.Image,
+            classType: Phaser.Physics.Arcade.Sprite,
+            maxSize: 3,
+            createCallback: (go) => {
+                this.anims.play('star', go);
+            }
         });
         this.character = this.add.character(700, 100, 'characters');
         this.character.setScale(0.9);
         this.character.setAtackes(this.atackes);
+        window.char = this.character;
         const hodeds = this.physics.add.group({
             classType: Hoded,
             createCallback: (go) => {
@@ -47,7 +52,7 @@ export default class PlayScene extends Phaser.Scene {
             }
         });
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1');
-        for (let x = 0; x < 5; x++) {
+        for (let x = 0; x < 15; x++) {
             this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(400, 900), 'enemies', 'bat-front1');
         }
         const map = this.add.tilemap("map");
@@ -76,8 +81,6 @@ export default class PlayScene extends Phaser.Scene {
         obj1.destroy();
     }
     handleAtackeCollision(obj1, obj2) {
-        console.dir(obj1);
-        console.dir(obj2);
         this.bats.killAndHide(obj1);
         this.bats.killAndHide(obj2);
         obj2.destroy();
@@ -97,7 +100,7 @@ export default class PlayScene extends Phaser.Scene {
     }
     update(time, delta) {
         if (this.character) {
-            this.character.update(this.cursor);
+            this.character.update(this.cursor, this);
         }
     }
 }

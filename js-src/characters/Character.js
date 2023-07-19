@@ -52,9 +52,13 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             this.damageTime = 0;
         }
     }
-    throwAtack() {
+    throwAtack(scene) {
         var _a;
         if (!this.atackes) {
+            return;
+        }
+        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
+        if (!atack) {
             return;
         }
         const parts = (_a = this.anims.currentAnim) === null || _a === void 0 ? void 0 : _a.key.split('-');
@@ -76,7 +80,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                     break;
             }
             const angle = vec.angle();
-            const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
             atack.setActive(true);
             atack.setVisible(true);
             atack.x += vec.x * 16;
@@ -106,16 +109,17 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     /*
         O método update é usado para atualizar o personagem a cada quadro, verificando as teclas pressionadas e ajustando a velocidade e a animação do personagem de acordo.
     */
-    update(cursor) {
+    update(cursor, scene) {
         var _a, _b, _c, _d, _e;
         if (this.healthState === HealthState.DAMAGE
             || this.healthState === HealthState.DEAD) {
             return;
         }
-        if (!cursor)
+        if (!cursor) {
             return;
+        }
         if (Phaser.Input.Keyboard.JustDown(cursor.space)) {
-            this.throwAtack();
+            this.throwAtack(scene);
             return;
         }
         this.setVelocityX(0);
