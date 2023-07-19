@@ -18,7 +18,7 @@ export default class MenuScene extends Phaser.Scene {
 
     // Create Imagems
 
-    this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(.55).setOrigin(0).setDepth(0).setAlpha(0.5);
+    this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(1.2).setOrigin(0).setDepth(0).setAlpha(0.5);
 
     // Create text Buttons
     let playButton = this.add

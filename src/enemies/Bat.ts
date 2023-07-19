@@ -45,7 +45,6 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
     private handleTileColision(go: Phaser.GameObjects.GameObject, tile: Phaser.Tilemaps.Tile) {
         if(go !== this)
         {
-            console.dir(go)
             return
         } 
 

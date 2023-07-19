@@ -2,6 +2,7 @@ import { CST } from "../CST"
 import { sceneEvents } from "../events/EventCenter"
 
 export default class GameUI extends Phaser.Scene {
+    //@ts-ignore
     private hearts: Phaser.GameObjects.Group;
 
     constructor()
