@@ -33,7 +33,7 @@ export const CST = {
       six: (Phaser.Input.Keyboard.KeyCodes.KeyCode = 54),
       seven: (Phaser.Input.Keyboard.KeyCodes.KeyCode = 55),
       eight: (Phaser.Input.Keyboard.KeyCodes.KeyCode = 56),
-      nine: (Phaser.Input.Keyboard.KeyCodes.KeyCode = 57),
+      nine: (Phaser.Input.Keyboard.KeyCodes.KeyCode = 5),
     },
   },
 };
