@@ -35,15 +35,7 @@ Tudo que é você precisa para desenvolver um jogo com JavaScript...
             Download: https://thorbjorn.itch.io/tiled/download/eyJleHBpcmVzIjoxNjg4ODg5NjYzLCJpZCI6Mjg3Njh9.RrV1D8X1OxReZN6TG2AEFQ1nZbE%3d
 
 
-## Phaser 3 Comands
-
-    * Basic Comands
-        setOrigin 0 = faz com que a imagem se pocione no y 0 e x 0
-        setScale = Define o tamanho da imagem
-        setDepth = Define a camada do objeto parecido com (z-index);
-        sprit - cria uma sprit com o tamanho definido
-        setVisible - torna o objeto visivel ou não na tela
-
+## Phaser 3
     * Pointer Events 
         EX: event.on("pointerover")
             pointerover - hovering
@@ -57,8 +49,3 @@ Tudo que é você precisa para desenvolver um jogo com JavaScript...
             animationrepeat
             animationupdate
             animationcomplete
-
-    3D Arcade {
-        ❌ this.character.x += 64 * (delta / 1000);
-        ✅ this.character.setVelocityX(64)
-    }
