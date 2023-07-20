@@ -16,14 +16,17 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     get health() {
         return this._health;
     }
+    recoverHealth() {
+        this._health++;
+    }
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
         this.healthState = HealthState.IDLE;
         this.damageTime = 0;
         this._health = 3;
-        this.setFrame('char_670');
-        this.hp = 10;
+        this.maxHealth = 5;
         this.velocity = 128;
+        this.setFrame('char_670');
     }
     setAtackes(atackes) {
         this.atackes = atackes;

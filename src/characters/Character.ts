@@ -32,19 +32,20 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private _health = 3;
     private atackes?: Phaser.Physics.Arcade.Group
     
-    hp: number;
-    velocity: number;
+    maxHealth: number = 5;
+    velocity: number = 128;
 
     get health() {
         return this._health;
     }
 
+    recoverHealth() {
+        this._health++
+    }
+
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame)
         this.setFrame('char_670',)
-
-        this.hp = 10;
-        this.velocity = 128;
     }
 
     setAtackes(atackes: Phaser.Physics.Arcade.Group) 
@@ -136,7 +137,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             atack.setVelocity(vec.x * 300, vec.y * 300)        
             
             }
-
     }
 
     /*

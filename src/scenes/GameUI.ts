@@ -4,6 +4,7 @@ import { sceneEvents } from "../events/EventCenter"
 export default class GameUI extends Phaser.Scene {
     //@ts-ignore
     private hearts: Phaser.GameObjects.Group;
+    amountHearts = 3;
 
     constructor()
     {
@@ -12,8 +13,8 @@ export default class GameUI extends Phaser.Scene {
 
     create()
     {
-        // this.add.rectangle(95, 47, 82, 10, 0xff0000)
-        // const bar = this.add.image(48, -64, CST.IMAGE.LIFE_BAR).setOrigin(0).setCrop(0, 48, 48, 16).setScale(2)
+        this.add.rectangle(95, 47, 82, 10, 0xff0000)
+        const bar = this.add.image(48, -64, CST.IMAGE.LIFE_BAR).setOrigin(0).setCrop(0, 48, 48, 16).setScale(2)
 
         this.hearts = this.add.group({
             classType: Phaser.GameObjects.Image
@@ -23,7 +24,7 @@ export default class GameUI extends Phaser.Scene {
             key: CST.IMAGE.HEART_FULL,
             setXY: {
                 x: 50,
-                y: 50,                  
+                y: 300,                  
             },
             quantity: 3,
         })
@@ -35,6 +36,8 @@ export default class GameUI extends Phaser.Scene {
         })
 
         sceneEvents.on('player-health-changed', this.handlePlayerHealthChanged, this)
+
+        sceneEvents.on('update-max-health-changed', this.updateHeartCount, this)
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             sceneEvents.off('player-health-changed', this.handlePlayerHealthChanged, this)
@@ -53,7 +56,40 @@ export default class GameUI extends Phaser.Scene {
             {
                 heart.setTexture(CST.IMAGE.HEART_EMPTY)
             }
+        }) 
+    }
 
+    private updateHeartCount(currentHealth: number, maxHealth: number) {
+        maxHealth -= currentHealth ;
+        console.log({currentHealth, maxHealth})
+
+        this.hearts.clear(true)
+
+        this.hearts.createMultiple({
+            key: CST.IMAGE.HEART_FULL,
+            setXY: {
+                x: 50,
+                y: 50,                  
+            },
+            quantity: currentHealth
+        })
+
+        if(maxHealth) {
+            this.hearts.createMultiple({
+                key: CST.IMAGE.HEART_EMPTY,
+                setXY: {
+                    x: 50,
+                    y: 50,                  
+                },
+                quantity: maxHealth 
+            })
+        }
+
+        //@ts-ignore
+        this.hearts.children.iterate((heart: Phaser.GameObjects.Image, index: number) => {           
+            heart.x = 50 + (index * 30)
+            heart.setScale(2)
         })
     }
+    
 }
