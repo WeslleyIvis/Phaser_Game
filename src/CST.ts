@@ -6,7 +6,7 @@ export const CST = {
     GAME_UI: 'GAME-UI'
   },
   IMAGE: {
-    BG_MENU: "bg-menu.png",
+    BG_MENU: "bg-menu.jpg",
     HEART_FULL: 'heart_full.png',
     HEART_EMPTY: 'heart_empty.png',
     LIFE_BAR: 'lifebar.png'
