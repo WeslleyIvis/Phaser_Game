@@ -13,8 +13,8 @@ export default class GameUI extends Phaser.Scene {
 
     create()
     {
-        this.add.rectangle(95, 47, 82, 10, 0xff0000)
-        const bar = this.add.image(48, -64, CST.IMAGE.LIFE_BAR).setOrigin(0).setCrop(0, 48, 48, 16).setScale(2)
+        // this.add.rectangle(95, 47, 82, 10, 0xff0000)
+        // const bar = this.add.image(48, -64, CST.IMAGE.LIFE_BAR).setOrigin(0).setCrop(0, 48, 48, 16).setScale(2)
 
         this.hearts = this.add.group({
             classType: Phaser.GameObjects.Image
@@ -61,8 +61,6 @@ export default class GameUI extends Phaser.Scene {
 
     private updateHeartCount(currentHealth: number, maxHealth: number) {
         maxHealth -= currentHealth ;
-        console.log({currentHealth, maxHealth})
-
         this.hearts.clear(true)
 
         this.hearts.createMultiple({
