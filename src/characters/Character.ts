@@ -30,7 +30,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private damageTime = 0;
 
     private _health = 3;
-    private atackes?: Phaser.Physics.Arcade.Group
+    private atackes!: Phaser.Physics.Arcade.Group
     
     maxHealth: number = 5;
     velocity: number = 128;
@@ -45,7 +45,11 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame)
-        this.setFrame('char_670',)
+        this.setFrame('char_247')
+
+        scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
+            this.basicAtack(cursor)
+        })
     }
 
     setAtackes(atackes: Phaser.Physics.Arcade.Group) 
@@ -99,13 +103,53 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             return
         }
 
-        const parts = this.anims.currentAnim?.key.split('-')
-        if (parts) {
-            const direction = parts[2] 
+        const vec = this.currentAngle()
+        const angle = vec.angle()
 
-            const vec = new Phaser.Math.Vector2(0, 0)
+        atack.setActive(true)
+        atack.setVisible(true);
+        
+        atack.x += vec.x * 16;
+        atack.y += vec.y * 16;
+        
+        atack.setRotation(angle)
+        atack.setVelocity(vec.x * 300, vec.y * 300)        
 
-            switch(direction) 
+    }
+
+    private basicAtack(cursor: Phaser.Input.Pointer) {
+        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
+
+        console.log({cx: cursor.worldX, cy: cursor.worldY, tx: this.x, ty: this.y})
+
+        const directionX = cursor.worldX - this.x
+        const directionY = cursor.worldY - this.y
+
+        const length = Math.sqrt(directionX * directionX + directionY * directionY)
+        const normalizedDirectionX = directionX / length
+        const normalizedDirectionY = directionY / length
+
+        console.log({leng: length, nx: normalizedDirectionX, ny: normalizedDirectionY})
+
+        const atackSpeed = 300;
+
+        atack.setActive(true).setVisible(true).setVelocity(normalizedDirectionX * atackSpeed, normalizedDirectionY * atackSpeed)
+
+        
+    }
+
+    /* 
+    Pega a direção do personagem em angulos com base na direção que ele se movimentou pela última vez
+    */
+    private currentAngle() {
+        const parts = this.anims.currentAnim?.key.split('-')      
+        const vec = new Phaser.Math.Vector2(0, 0)
+
+        if(parts) 
+        {
+            const diretion = parts[2]
+            
+            switch(diretion)
             {
                 case 'up':
                     vec.y = -1
@@ -123,20 +167,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                     vec.x = 1
                     break
             }
-            
+        }
 
-            const angle = vec.angle();
-
-            atack.setActive(true)
-            atack.setVisible(true);
-            
-            atack.x += vec.x * 16;
-            atack.y += vec.y * 16;
-            
-            atack.setRotation(angle)
-            atack.setVelocity(vec.x * 300, vec.y * 300)        
-            
-            }
+        return vec
     }
 
     /*
@@ -171,8 +204,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             {
                 return
             }
-
-
 
         if(!cursor ) {
             return
@@ -243,6 +274,8 @@ Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser
   */
     sprite.body?.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10)
 
+    sprite.setScale(0.9)
+    sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
     */
