@@ -1,19 +1,19 @@
 const createCharacterAnims = (anims) => {
     anims.create({
         key: 'char-idle-down',
-        frames: [{ key: 'characters', frame: 'char_670' }]
+        frames: [{ key: 'characters', frame: 'char_247' }]
     });
     anims.create({
         key: 'char-idle-up',
-        frames: [{ key: 'characters', frame: 'char_706' }]
+        frames: [{ key: 'characters', frame: 'char_283' }]
     });
     anims.create({
         key: 'char-idle-left',
-        frames: [{ key: 'characters', frame: 'char_682' }]
+        frames: [{ key: 'characters', frame: 'char_259' }]
     });
     anims.create({
         key: 'char-idle-right',
-        frames: [{ key: 'characters', frame: 'char_694' }]
+        frames: [{ key: 'characters', frame: 'char_271' }]
     });
     anims.create({
         key: 'char-run-down',
@@ -21,8 +21,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 669,
-            end: 671
+            start: 246,
+            end: 248
         })
     });
     anims.create({
@@ -31,8 +31,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 705,
-            end: 707
+            start: 282,
+            end: 284
         })
     });
     anims.create({
@@ -41,8 +41,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 681,
-            end: 683
+            start: 258,
+            end: 260
         })
     });
     anims.create({
@@ -51,8 +51,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 693,
-            end: 695
+            start: 270,
+            end: 272
         })
     });
     anims.create({

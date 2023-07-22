@@ -12,7 +12,7 @@ export default class PlayScene extends Phaser.Scene {
         super({ key: CST.SCENES.PLAY });
     }
     preload() {
-        //console.log(this.textures.list)     
+        //console.log(this.textures.list)     x
         var _a;
         this.cursor = (_a = this.input.keyboard) === null || _a === void 0 ? void 0 : _a.addKeys(CST.KEYBOARD.KEYS);
         this.load.image("tiles", "./assets/maps/textures.png");
@@ -20,7 +20,7 @@ export default class PlayScene extends Phaser.Scene {
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
     }
     create() {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         this.scene.run(CST.SCENES.GAME_UI);
         createSpells(this.anims);
         createCharacterAnims(this.anims);
@@ -38,9 +38,7 @@ export default class PlayScene extends Phaser.Scene {
         });
         this.items.get(500, 500, CST.IMAGE.HEART_EMPTY);
         this.character = this.add.character(700, 100, 'characters');
-        this.character.setScale(0.85);
         this.character.setAtackes(this.atackes);
-        this.character.setDepth(1);
         window.char = this.character;
         const hodeds = this.physics.add.group({
             classType: Hoded,
@@ -58,8 +56,8 @@ export default class PlayScene extends Phaser.Scene {
             }
         });
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1');
-        for (let x = 0; x < 1; x++) {
-            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(400, 900), 'enemies', 'bat-front1');
+        for (let x = 0; x < 5; x++) {
+            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1');
         }
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
@@ -68,9 +66,9 @@ export default class PlayScene extends Phaser.Scene {
         const shadow = map.createLayer("shadow", tileset, 0, 0);
         const shadow_2 = map.createLayer("shadow_2", tileset, 0, 0);
         const objcollider = map.createLayer("collider", tileset, 0, 0);
-        const objcollider_2 = map.createLayer("collider_2", tileset, 0, 0);
-        const objabove = (_c = map.createLayer("above", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(2);
-        const objabove_2 = (_d = map.createLayer("above_2", tileset, 0, 0)) === null || _d === void 0 ? void 0 : _d.setDepth(2);
+        const objcollider_2 = (_c = map.createLayer("collider_2", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(2);
+        const objabove = (_d = map.createLayer("above", tileset, 0, 0)) === null || _d === void 0 ? void 0 : _d.setDepth(3);
+        const objabove_2 = (_e = map.createLayer("above_2", tileset, 0, 0)) === null || _e === void 0 ? void 0 : _e.setDepth(3);
         const tileColliderGroup = map.getObjectLayer('tiles_collider');
         const staticTileGroup = this.physics.add.staticGroup();
         tileColliderGroup === null || tileColliderGroup === void 0 ? void 0 : tileColliderGroup.objects.forEach((tile) => {
@@ -87,7 +85,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        //this.cameras.main.setZoom(1.2)
+        this.cameras.main.setZoom(1.2);
         window.can = this.cameras;
         objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collider: true });
         objcollider_2 === null || objcollider_2 === void 0 ? void 0 : objcollider_2.setCollisionByProperty({ collider: true });

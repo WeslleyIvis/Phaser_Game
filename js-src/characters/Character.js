@@ -26,7 +26,10 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this._health = 3;
         this.maxHealth = 5;
         this.velocity = 128;
-        this.setFrame('char_670');
+        this.setFrame('char_247');
+        scene.input.on('pointerdown', (cursor) => {
+            this.basicAtack(cursor);
+        });
     }
     setAtackes(atackes) {
         this.atackes = atackes;
@@ -56,7 +59,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         }
     }
     throwAtack(scene) {
-        var _a;
         if (!this.atackes) {
             return;
         }
@@ -64,11 +66,37 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         if (!atack) {
             return;
         }
+        const vec = this.currentAngle();
+        const angle = vec.angle();
+        atack.setActive(true);
+        atack.setVisible(true);
+        atack.x += vec.x * 16;
+        atack.y += vec.y * 16;
+        atack.setRotation(angle);
+        atack.setVelocity(vec.x * 300, vec.y * 300);
+    }
+    basicAtack(cursor) {
+        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
+        console.log({ cx: cursor.worldX, cy: cursor.worldY, tx: this.x, ty: this.y });
+        const directionX = cursor.worldX - this.x;
+        const directionY = cursor.worldY - this.y;
+        const length = Math.sqrt(directionX * directionX + directionY * directionY);
+        const normalizedDirectionX = directionX / length;
+        const normalizedDirectionY = directionY / length;
+        console.log({ leng: length, nx: normalizedDirectionX, ny: normalizedDirectionY });
+        const atackSpeed = 300;
+        atack.setActive(true).setVisible(true).setVelocity(normalizedDirectionX * atackSpeed, normalizedDirectionY * atackSpeed);
+    }
+    /*
+    Pega a direção do personagem em angulos com base na direção que ele se movimentou pela última vez
+    */
+    currentAngle() {
+        var _a;
         const parts = (_a = this.anims.currentAnim) === null || _a === void 0 ? void 0 : _a.key.split('-');
+        const vec = new Phaser.Math.Vector2(0, 0);
         if (parts) {
-            const direction = parts[2];
-            const vec = new Phaser.Math.Vector2(0, 0);
-            switch (direction) {
+            const diretion = parts[2];
+            switch (diretion) {
                 case 'up':
                     vec.y = -1;
                     break;
@@ -82,14 +110,8 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                     vec.x = 1;
                     break;
             }
-            const angle = vec.angle();
-            atack.setActive(true);
-            atack.setVisible(true);
-            atack.x += vec.x * 16;
-            atack.y += vec.y * 16;
-            atack.setRotation(angle);
-            atack.setVelocity(vec.x * 300, vec.y * 300);
         }
+        return vec;
     }
     /*
         O método preUpdate é um método interno do Phaser que é chamado antes da atualização do objeto a cada quadro. Ele é usado para atualizar o estado do personagem, como a contagem de tempo de dano.
@@ -181,6 +203,8 @@ Phaser.GameObjects.GameObjectFactory.register('character', function (x, y, textu
     Definição de um deslocamento (setOffset) e tamanho (setSize) para o corpo físico do objeto 'sprite'
     */
     (_a = sprite.body) === null || _a === void 0 ? void 0 : _a.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10);
+    sprite.setScale(0.9);
+    sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
     */
