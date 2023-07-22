@@ -28,7 +28,7 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     preload() {
-        //console.log(this.textures.list)     
+        //console.log(this.textures.list)     x
 
         this.cursor = this.input.keyboard?.addKeys(CST.KEYBOARD.KEYS) as Phaser.Types.Input.Keyboard.CursorKeys
 
@@ -61,9 +61,7 @@ export default class PlayScene extends Phaser.Scene {
 
 
         this.character = this.add.character(700, 100, 'characters')
-        this.character.setScale(0.85)
         this.character.setAtackes(this.atackes)
-        this.character.setDepth(1);
         
         window.char = this.character
         
@@ -87,9 +85,9 @@ export default class PlayScene extends Phaser.Scene {
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1')
         
 
-        for(let x = 0; x < 1; x++)
+        for(let x = 0; x < 5; x++)
         {
-            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(400, 900), 'enemies', 'bat-front1')
+            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1')
         }
 
         const map = this.add.tilemap("map")
@@ -100,9 +98,9 @@ export default class PlayScene extends Phaser.Scene {
         const shadow = map.createLayer("shadow", tileset, 0, 0)
         const shadow_2 = map.createLayer("shadow_2", tileset, 0, 0)
         const objcollider = map.createLayer("collider", tileset, 0, 0)
-        const objcollider_2 = map.createLayer("collider_2", tileset, 0, 0)
-        const objabove = map.createLayer("above", tileset, 0, 0)?.setDepth(2)
-        const objabove_2 = map.createLayer("above_2", tileset, 0, 0)?.setDepth(2)
+        const objcollider_2 = map.createLayer("collider_2", tileset, 0, 0)?.setDepth(2)
+        const objabove = map.createLayer("above", tileset, 0, 0)?.setDepth(3)
+        const objabove_2 = map.createLayer("above_2", tileset, 0, 0)?.setDepth(3)
 
         const tileColliderGroup = map.getObjectLayer('tiles_collider')
         const staticTileGroup = this.physics.add.staticGroup()
@@ -126,7 +124,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
         // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        //this.cameras.main.setZoom(1.2)
+        this.cameras.main.setZoom(1.2)
 
         window.can = this.cameras
 
