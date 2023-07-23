@@ -15,7 +15,7 @@ export default class GameUI extends Phaser.Scene {
             key: CST.IMAGE.HEART_FULL,
             setXY: {
                 x: 50,
-                y: 300,
+                y: 50,
             },
             quantity: 3,
         });

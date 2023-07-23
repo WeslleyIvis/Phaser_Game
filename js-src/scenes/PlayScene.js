@@ -16,7 +16,6 @@ export default class PlayScene extends Phaser.Scene {
         var _a;
         this.cursor = (_a = this.input.keyboard) === null || _a === void 0 ? void 0 : _a.addKeys(CST.KEYBOARD.KEYS);
         this.load.image("tiles", "./assets/maps/textures.png");
-        this.load.image("itens", "./assets/maps/itens.png");
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
     }
     create() {
@@ -93,7 +92,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision, undefined, this);
         this.physics.add.collider(this.bats, objcollider);
-        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerBatCollision, undefined, this);
+        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerEnemyCollision, undefined, this);
         this.physics.add.collider(this.items, objcollider);
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
@@ -103,13 +102,15 @@ export default class PlayScene extends Phaser.Scene {
     }
     handleAtackeCollision(obj1, obj2) {
         console.dir({ obj1, obj2 });
-        // this.bats.killAndHide(obj1)
-        // this.bats.killAndHide(obj2)
-        this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
+        const random = Phaser.Math.Between(0, 10);
+        console.log(random);
+        if (random <= 4) {
+            this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
+        }
         obj2.destroy();
         obj1.destroy();
     }
-    handlePlayerBatCollision(obj1, obj2) {
+    handlePlayerEnemyCollision(obj1, obj2) {
         var _a;
         const bat = obj2;
         const dx = this.character.x - bat.x;
