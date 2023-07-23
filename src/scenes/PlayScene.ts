@@ -33,7 +33,6 @@ export default class PlayScene extends Phaser.Scene {
         this.cursor = this.input.keyboard?.addKeys(CST.KEYBOARD.KEYS) as Phaser.Types.Input.Keyboard.CursorKeys
 
         this.load.image("tiles", "./assets/maps/textures.png");
-        this.load.image("itens", "./assets/maps/itens.png");
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
     }
 
@@ -139,7 +138,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
         this.physics.add.collider(this.bats, objcollider as Phaser.Tilemaps.TilemapLayer);
-        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerBatCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
         this.physics.add.collider(this.items, objcollider as Phaser.Tilemaps.TilemapLayer)
         this.physics.add.collider(this.items, this.character, this.handleItemCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
@@ -154,17 +153,19 @@ export default class PlayScene extends Phaser.Scene {
     private handleAtackeCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.Physics.Arcade.Sprite) {
         console.dir({obj1, obj2})
 
-        // this.bats.killAndHide(obj1)
-        // this.bats.killAndHide(obj2)
+        const random = Phaser.Math.Between(0, 10)
+        console.log(random)
 
-        this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
+        if(random <=4) {
+            this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
+        }
 
         obj2.destroy()
         obj1.destroy()
     }
 
-    private handlePlayerBatCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
-        const bat = obj2 as Bat
+    private handlePlayerEnemyCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.Sprite) {
+        const bat = obj2 
 
         const dx = this.character.x - bat.x
         const dy = this.character.y - bat.y
