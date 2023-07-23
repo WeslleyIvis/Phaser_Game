@@ -33,7 +33,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private atackes!: Phaser.Physics.Arcade.Group
     
     maxHealth: number = 5;
-    velocity: number = 128;
+    velocity: number = 300;
+    experience: number = 0
+    lv: number = 1;
 
     get health() {
         return this._health;
@@ -48,7 +50,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this.setFrame('char_247')
 
         scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
-            this.basicAtack(cursor)
+            this.cursorAtack(cursor)
         })
     }
 
@@ -117,25 +119,32 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    private basicAtack(cursor: Phaser.Input.Pointer) {
+    private cursorAtack(cursor: Phaser.Input.Pointer) {
         const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
-
-        console.log({cx: cursor.worldX, cy: cursor.worldY, tx: this.x, ty: this.y})
 
         const directionX = cursor.worldX - this.x
         const directionY = cursor.worldY - this.y
 
+        /*
+            O processo de normalização consiste em dividir cada componente do vetor pela magnitude total do vetor. A magnitude total do vetor é a raiz quadrada da soma dos quadrados de suas componentes (de acordo com o teorema de Pitágoras). O cálculo é feito da seguinte maneira:
+
+            length é a magnitude total do vetor de direção. normalizedDirectionX e normalizedDirectionY são as componentes do vetor de direção normalizado.
+        */
         const length = Math.sqrt(directionX * directionX + directionY * directionY)
         const normalizedDirectionX = directionX / length
         const normalizedDirectionY = directionY / length
 
-        console.log({leng: length, nx: normalizedDirectionX, ny: normalizedDirectionY})
-
+        // Velocidade do atack
         const atackSpeed = 300;
 
+        /* 
+        Define a velocidade do ataque multiplicando o vetor de direção normalizado pela velocidade
+        */
         atack.setActive(true).setVisible(true).setVelocity(normalizedDirectionX * atackSpeed, normalizedDirectionY * atackSpeed)
 
-        
+         // Define a rotação do ataque para a direção do cursor -- Radianos
+        const angle = Phaser.Math.RadToDeg(Math.atan2(normalizedDirectionY, normalizedDirectionX))
+        atack.setRotation(angle)
     }
 
     /* 
