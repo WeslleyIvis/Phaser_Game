@@ -79,3 +79,21 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
         }
     }
 }
+
+Phaser.GameObjects.GameObjectFactory.register('bat', function(this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, texture: string, frame?: string | number) {
+    var sprite = new Bat(this.scene, x, y, texture, frame);
+  
+    this.displayList.add(sprite);
+    this.updateList.add(sprite);
+
+    this.scene.physics.world.enableBody(sprite, Phaser.Physics.Arcade.    DYNAMIC_BODY);
+  
+    sprite.body?.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10)
+
+    sprite.setScale(0.9)
+    sprite.setDepth(1);
+
+    sprite.setCollideWorldBounds(true)
+
+    return sprite;
+})
