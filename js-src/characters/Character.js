@@ -26,6 +26,8 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this._health = 3;
         this.maxHealth = 5;
         this.velocity = 300;
+        this.experience = 0;
+        this.lv = 1;
         this.setFrame('char_247');
         scene.input.on('pointerdown', (cursor) => {
             this.cursorAtack(cursor);

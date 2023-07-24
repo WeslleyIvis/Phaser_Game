@@ -6,7 +6,7 @@ import { sceneEvents } from "../events/EventCenter";
 import "../characters/Character";
 import Bat from "../enemies/Bat";
 import Hoded from "../enemies/Hoded";
-import Item from "../items/item";
+import Item from "../items/Item";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
@@ -46,7 +46,7 @@ export default class PlayScene extends Phaser.Scene {
                 hodedgo.setSize(30, 50).setOffset(10, 20);
             }
         });
-        this.bats = this.physics.add.group({
+        this.enemies = this.physics.add.group({
             classType: Bat,
             createCallback: (go) => {
                 const batgo = go;
@@ -56,7 +56,7 @@ export default class PlayScene extends Phaser.Scene {
         });
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1');
         for (let x = 0; x < 5; x++) {
-            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1');
+            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1');
         }
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
@@ -79,7 +79,7 @@ export default class PlayScene extends Phaser.Scene {
             tileCollider.setImmovable(true);
         });
         this.physics.add.collider(this.character, staticTileGroup);
-        this.physics.add.collider(this.bats, staticTileGroup);
+        this.physics.add.collider(this.enemies, staticTileGroup);
         this.cameras.main.startFollow(this.character);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -90,9 +90,9 @@ export default class PlayScene extends Phaser.Scene {
         objcollider_2 === null || objcollider_2 === void 0 ? void 0 : objcollider_2.setCollisionByProperty({ collider: true });
         this.physics.add.collider(this.character, objcollider);
         this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
-        this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision, undefined, this);
-        this.physics.add.collider(this.bats, objcollider);
-        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerEnemyCollision, undefined, this);
+        this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
+        this.physics.add.collider(this.enemies, objcollider);
+        this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision, undefined, this);
         this.physics.add.collider(this.items, objcollider);
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
