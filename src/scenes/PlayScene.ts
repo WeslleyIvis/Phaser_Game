@@ -9,8 +9,9 @@ import "../characters/Character";
 import Character from "../characters/Character";
 
 import Bat from "../enemies/Bat";
+
 import Hoded from "../enemies/Hoded";
-import Item from "../items/item";
+import Item from "../items/Item";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     private character!: Character;
@@ -19,7 +20,7 @@ export default class PlayScene extends Phaser.Scene {
 
     private items!: Phaser.Physics.Arcade.Group
 
-    private bats!: Phaser.Physics.Arcade.Group
+    private enemies!: Phaser.Physics.Arcade.Group
 
     private playerCollider?: Phaser.Physics.Arcade.Collider
 
@@ -72,8 +73,8 @@ export default class PlayScene extends Phaser.Scene {
             }
         })
 
-        this.bats = this.physics.add.group({
-            classType: Bat,
+        this.enemies = this.physics.add.group({
+            classType: Bat, 
             createCallback: (go) => {
                 const batgo = go as Bat
                 batgo.setSize(47,40).setOffset(0, 10).setScale(.9),               
@@ -82,11 +83,12 @@ export default class PlayScene extends Phaser.Scene {
         })
 
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1')
+
         
 
         for(let x = 0; x < 5; x++)
         {
-            this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1')
+            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1')
         }
 
         const map = this.add.tilemap("map")
@@ -117,7 +119,7 @@ export default class PlayScene extends Phaser.Scene {
         })
 
         this.physics.add.collider(this.character, staticTileGroup)
-        this.physics.add.collider(this.bats, staticTileGroup)
+        this.physics.add.collider(this.enemies, staticTileGroup)
 
         this.cameras.main.startFollow(this.character);
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
@@ -135,10 +137,10 @@ export default class PlayScene extends Phaser.Scene {
         
         this.physics.add.collider(this.atackes, objcollider as Phaser.Tilemaps.TilemapLayer, this.handleAtackWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
         
-        this.physics.add.collider(this.atackes, this.bats, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
-        this.physics.add.collider(this.bats, objcollider as Phaser.Tilemaps.TilemapLayer);
-        this.playerCollider = this.physics.add.collider(this.bats, this.character, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.physics.add.collider(this.enemies, objcollider as Phaser.Tilemaps.TilemapLayer);
+        this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
         this.physics.add.collider(this.items, objcollider as Phaser.Tilemaps.TilemapLayer)
         this.physics.add.collider(this.items, this.character, this.handleItemCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
