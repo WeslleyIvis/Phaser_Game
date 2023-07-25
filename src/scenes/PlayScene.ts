@@ -12,6 +12,7 @@ import Bat from "../enemies/Bat";
 
 import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
+import HealthBar from "./HealthBar";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     private character!: Character;
@@ -21,6 +22,8 @@ export default class PlayScene extends Phaser.Scene {
     private items!: Phaser.Physics.Arcade.Group
 
     private enemies!: Phaser.Physics.Arcade.Group
+
+    private healthBars!: Phaser.GameObjects.Group
 
     private playerCollider?: Phaser.Physics.Arcade.Collider
 
@@ -84,12 +87,20 @@ export default class PlayScene extends Phaser.Scene {
 
         hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1')
 
-        
-
         for(let x = 0; x < 5; x++)
         {
             this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1')
         }
+        
+        this.healthBars = this.add.group()
+
+        this.enemies.getChildren().forEach((child: Phaser.GameObjects.Sprite)=> {
+            const bar = new HealthBar(this,child.x, child.y, 100, 10)
+            this.healthBars.add(bar)
+            
+        })
+
+        console.log(this.healthBars)
 
         const map = this.add.tilemap("map")
         const tileset: Phaser.Tilemaps.Tileset  = map.addTilesetImage("textures", "tiles") as Phaser.Tilemaps.Tileset
