@@ -7,6 +7,7 @@ import "../characters/Character";
 import Bat from "../enemies/Bat";
 import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
+import HealthBar from "./HealthBar";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
@@ -58,6 +59,12 @@ export default class PlayScene extends Phaser.Scene {
         for (let x = 0; x < 5; x++) {
             this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1');
         }
+        this.healthBars = this.add.group();
+        this.enemies.getChildren().forEach((child) => {
+            const bar = new HealthBar(this, child.x, child.y, 100, 10);
+            this.healthBars.add(bar);
+        });
+        console.log(this.healthBars);
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
         const ground = (_a = map.createLayer("floor", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-2);
