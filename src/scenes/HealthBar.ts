@@ -1,4 +1,6 @@
-export default class HealthBar extends Phaser.GameObjects.Graphics {
+import { sceneEvents } from "../events/EventCenter";
+
+export default class HealthBar extends Phaser.GameObjects.Co {
     private barWidth: number;
     private barHeight: number;
     private healthBar: Phaser.GameObjects.Graphics
@@ -14,9 +16,15 @@ export default class HealthBar extends Phaser.GameObjects.Graphics {
         this.maxValue = 100
 
         this.healthBar = new Phaser.GameObjects.Graphics(scene);
-        
+        this.add
+
         this.draw()
         this.scene.add.existing(this);
+    }
+
+    create() 
+    {
+        sceneEvents.emit('update-health-bar')
     }
 
     setValue(newValue: number) {
@@ -33,7 +41,7 @@ export default class HealthBar extends Phaser.GameObjects.Graphics {
         this.clear()
         const percent = this.value / this.maxValue
 
-        this.scene.add.rectangle(1000, 1000, 50, 50, 0xff0000)
+        
 
         this.healthBar.fillStyle(0x00ff00)
         this.healthBar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barHeight * percent, this.barHeight)

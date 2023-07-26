@@ -89,13 +89,13 @@ export default class PlayScene extends Phaser.Scene {
 
         for(let x = 0; x < 5; x++)
         {
-            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(1200, 1200), 'enemies', 'bat-front1')
+            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')
         }
         
         this.healthBars = this.add.group()
 
         this.enemies.getChildren().forEach((child: Phaser.GameObjects.Sprite)=> {
-            const bar = new HealthBar(this,child.x, child.y, 100, 10)
+            const bar = new HealthBar(this,child.x, child.y, 100, 5)
             this.healthBars.add(bar)
             
         })
