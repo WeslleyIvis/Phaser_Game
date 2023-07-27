@@ -1,5 +1,5 @@
 import { sceneEvents } from "../events/EventCenter";
-export default class HealthBar extends Phaser.GameObjects.Graphics {
+export default class HealthBar extends Phaser.GameObjects.Co {
     constructor(scene, x, y, width, height) {
         super(scene, { x: x, y: y });
         this.barWidth = width;
@@ -7,10 +7,7 @@ export default class HealthBar extends Phaser.GameObjects.Graphics {
         this.value = 100;
         this.maxValue = 100;
         this.healthBar = new Phaser.GameObjects.Graphics(scene);
-        this.scene.add.rectangle(x, y, -this.barWidth / 2, this.barHeight, 0xff0000);
-        this.healthBar.lineStyle(2, 0x000000);
-        this.healthBar.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
-        this.healthBar.setPosition(this.x - this.barWidth / 2, this.y - this.barHeight);
+        this.add;
         this.draw();
         this.scene.add.existing(this);
     }
