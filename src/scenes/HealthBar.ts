@@ -16,7 +16,6 @@ export default class HealthBar extends Phaser.GameObjects.Co {
         this.maxValue = 100
 
         this.healthBar = new Phaser.GameObjects.Graphics(scene);
-        this.add
 
         this.draw()
         this.scene.add.existing(this);
