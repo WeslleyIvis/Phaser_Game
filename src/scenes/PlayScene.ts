@@ -37,7 +37,7 @@ export default class PlayScene extends Phaser.Scene {
         this.cursor = this.input.keyboard?.addKeys(CST.KEYBOARD.KEYS) as Phaser.Types.Input.Keyboard.CursorKeys
 
         this.load.image("tiles", "./assets/maps/textures.png");
-        this.load.tilemapTiledJSON("map", "./assets/maps/mappy1.json");
+        this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
 
     create() {
@@ -50,7 +50,7 @@ export default class PlayScene extends Phaser.Scene {
 
         this.atackes = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 3,
+            maxSize: 6,
             createCallback: (go) => {
                 this.anims.play('star', go)
             }
@@ -59,9 +59,6 @@ export default class PlayScene extends Phaser.Scene {
         this.items = this.physics.add.group({
             classType: Item
         })
-
-        this.items.get(500, 500, CST.IMAGE.HEART_EMPTY)
-
 
         this.character = this.add.character(700, 100, 'characters')
         this.character.setAtackes(this.atackes)
@@ -73,6 +70,7 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const hodedgo = go as Hoded
                 hodedgo.setSize(30,50).setOffset(10, 20)
+                go.body.onCollide = true
             }
         })
 
@@ -92,27 +90,15 @@ export default class PlayScene extends Phaser.Scene {
             this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')
         }
         
-        this.healthBars = this.add.group()
-
-        this.enemies.getChildren().forEach((child: Phaser.GameObjects.Sprite)=> {
-            const bar = new HealthBar(this,child.x, child.y, 100, 5)
-            this.healthBars.add(bar)
-            
-        })
-
-        console.log(this.healthBars)
-
         const map = this.add.tilemap("map")
         const tileset: Phaser.Tilemaps.Tileset  = map.addTilesetImage("textures", "tiles") as Phaser.Tilemaps.Tileset
 
         const ground = map.createLayer("floor", tileset, 0, 0)?.setDepth(-2)
         const groundAbove = map.createLayer('floor_above', tileset, 0, 0)?.setDepth(-1)
         const shadow = map.createLayer("shadow", tileset, 0, 0)
-        const shadow_2 = map.createLayer("shadow_2", tileset, 0, 0)
-        const objcollider = map.createLayer("collider", tileset, 0, 0)
-        const objcollider_2 = map.createLayer("collider_2", tileset, 0, 0)?.setDepth(2)
+        const objcollider = map.createLayer("collider", tileset, 0, 0)  
         const objabove = map.createLayer("above", tileset, 0, 0)?.setDepth(3)
-        const objabove_2 = map.createLayer("above_2", tileset, 0, 0)?.setDepth(3)
+  
 
         const tileColliderGroup = map.getObjectLayer('tiles_collider')
         const staticTileGroup = this.physics.add.staticGroup()
@@ -141,7 +127,7 @@ export default class PlayScene extends Phaser.Scene {
         window.can = this.cameras
 
         objcollider?.setCollisionByProperty({collider: true})
-        objcollider_2?.setCollisionByProperty({collider: true})
+        
         
         
         this.physics.add.collider(this.character, objcollider as Phaser.Tilemaps.TilemapLayer)
@@ -173,6 +159,8 @@ export default class PlayScene extends Phaser.Scene {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
         }
 
+        this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
+
         obj2.destroy()
         obj1.destroy()
     }
@@ -203,7 +191,9 @@ export default class PlayScene extends Phaser.Scene {
             obj2.destroy();
         }
 
+        
         sceneEvents.emit('update-max-health-changed', this.character.health, this.character.maxHealth)
+        obj2.destroy();
     }
 
     
