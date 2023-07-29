@@ -5,24 +5,25 @@ var Direction;
     Direction[Direction["LEFT"] = 2] = "LEFT";
     Direction[Direction["RIGHT"] = 3] = "RIGHT";
 })(Direction || (Direction = {}));
-const randomDireciton = (exclude) => {
-    let newDiretion = Phaser.Math.Between(0, 3);
-    while (newDiretion === exclude) {
-        newDiretion = Phaser.Math.Between(0, 3);
-    }
-    return newDiretion;
-};
-export default class Hoded extends Phaser.Physics.Arcade.Sprite {
+export default class Gargule extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
-        this.direction = Direction.RIGHT;
-        this.speed = 40;
-        scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileColision, this);
+        this.direction = Direction.LEFT;
+        this.speed = 60;
     }
-    handleTileColision(go, tile) {
-        if (go !== this)
-            return;
-        this.direction = randomDireciton(this.direction);
+    setAtackes(projectiles) {
+        this.projectiles = projectiles;
+    }
+    throwFire(player) {
+        const vec = new Phaser.Math.Vector2(player.x - this.x, player.y - this.y);
+        vec.normalize();
+        const speedX = 200, speedY = 200;
+        const projectile = this.projectiles.get(this.x, this.y, 'magicEffect', 'effect_11');
+        projectile.setRotation(vec.angle());
+        projectile.playReverse('fire-bal');
+        if (projectile) {
+            projectile.fire(this.x, this.y, vec.x * speedX, vec.y * speedY);
+        }
     }
     moveTowardsPlayer(player) {
         const direciton = new Phaser.Math.Vector2(player.x - this.x, player.y - this.y);
@@ -35,20 +36,27 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
         direciton.normalize();
         this.setVelocity(direciton.x * this.speed, direciton.y * this.speed);
     }
+    destroy(fromScene) {
+        var _a;
+        if (this.projectiles) {
+            (_a = this.atackEvent) === null || _a === void 0 ? void 0 : _a.destroy();
+            super.destroy(fromScene);
+        }
+    }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);
         switch (this.direction) {
             case Direction.UP:
-                this.anims.play('assassin-up', true);
+                this.anims.play('gargoyle-up', true);
                 break;
             case Direction.DOWN:
-                this.anims.play('assassin-down', true);
+                this.anims.play('gargoyle-down', true);
                 break;
             case Direction.LEFT:
-                this.anims.play('assassin-left', true);
+                this.anims.play('gargoyle-left', true);
                 break;
             case Direction.RIGHT:
-                this.anims.play('assassin-right', true);
+                this.anims.play('gargoyle-right', true);
                 break;
         }
     }

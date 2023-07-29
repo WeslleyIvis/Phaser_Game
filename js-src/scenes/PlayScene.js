@@ -1,5 +1,5 @@
 import { CST } from "../CST";
-import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
+import { createEnemiesAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { createSpells } from "../anims/SpellsAnims";
 import { sceneEvents } from "../events/EventCenter";
@@ -7,9 +7,60 @@ import "../characters/Character";
 import Bat from "../enemies/Bat";
 import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
+import Gargule from "../enemies/Gargule";
+import Projectile from "../enemies/projectile";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
+    }
+    createGroupsEnemies() {
+        this.enemieProjectile = this.physics.add.group({
+            classType: Projectile,
+            runChildUpdate: true,
+        });
+        this.hodeds = this.physics.add.group({
+            classType: Hoded,
+            createCallback: (go) => {
+                const hodedgo = go;
+                hodedgo.setSize(30, 50).setOffset(10, 20);
+                go.body.onCollide = true;
+            }
+        });
+        this.bats = this.physics.add.group({
+            classType: Bat,
+            createCallback: (go) => {
+                const batgo = go;
+                batgo.setSize(47, 40).setOffset(0, 10).setScale(.9),
+                    batgo.body.onCollide = true;
+            }
+        });
+        this.gargules = this.physics.add.group({
+            classType: Gargule,
+            createCallback: (go) => {
+                const gargule = go;
+                gargule.setAtackes(this.enemieProjectile);
+                gargule.atackEvent = this.time.addEvent({
+                    delay: Phaser.Math.Between(1000, 3000),
+                    callback: () => {
+                        gargule.throwFire(this.character);
+                    },
+                    loop: true
+                });
+            }
+        });
+        this.enemies = this.physics.add.group();
+    }
+    createCharacter() {
+        this.atackes = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite,
+            maxSize: 6,
+            createCallback: (go) => {
+                this.anims.play('star', go);
+            }
+        });
+        this.character = this.add.character(700, 100, 'characters');
+        this.character.setAtackes(this.atackes);
+        window.char = this.character;
     }
     preload() {
         //console.log(this.textures.list)     x
@@ -23,40 +74,16 @@ export default class PlayScene extends Phaser.Scene {
         this.scene.run(CST.SCENES.GAME_UI);
         createSpells(this.anims);
         createCharacterAnims(this.anims);
-        createHodedAnims(this.anims);
-        createBatAnims(this.anims);
-        this.atackes = this.physics.add.group({
-            classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 6,
-            createCallback: (go) => {
-                this.anims.play('star', go);
-            }
-        });
+        createEnemiesAnims(this.anims);
         this.items = this.physics.add.group({
             classType: Item
         });
-        this.character = this.add.character(700, 100, 'characters');
-        this.character.setAtackes(this.atackes);
-        window.char = this.character;
-        const hodeds = this.physics.add.group({
-            classType: Hoded,
-            createCallback: (go) => {
-                const hodedgo = go;
-                hodedgo.setSize(30, 50).setOffset(10, 20);
-                go.body.onCollide = true;
-            }
-        });
-        this.enemies = this.physics.add.group({
-            classType: Bat,
-            createCallback: (go) => {
-                const batgo = go;
-                batgo.setSize(47, 40).setOffset(0, 10).setScale(.9),
-                    batgo.body.onCollide = true;
-            }
-        });
-        hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1');
-        for (let x = 0; x < 5; x++) {
-            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1');
+        this.createCharacter();
+        this.createGroupsEnemies();
+        for (let x = 0; x < 3; x++) {
+            this.enemies.add(this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1'));
+            this.enemies.add(this.hodeds.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'));
+            this.enemies.add(this.gargules.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'));
         }
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
@@ -67,6 +94,7 @@ export default class PlayScene extends Phaser.Scene {
         const objabove = (_c = map.createLayer("above", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(3);
         const tileColliderGroup = map.getObjectLayer('tiles_collider');
         const staticTileGroup = this.physics.add.staticGroup();
+        //Cria colisão para todos os objetos do tileMap
         tileColliderGroup === null || tileColliderGroup === void 0 ? void 0 : tileColliderGroup.objects.forEach((tile) => {
             const objectX = tile.x + tile.width / 2; // Adiciona a metade da largura para centralizar o objeto
             const objectY = tile.y + tile.height / 2; // Adiciona a metade da altura para centralizar o objeto
@@ -84,9 +112,12 @@ export default class PlayScene extends Phaser.Scene {
         this.cameras.main.setZoom(1.2);
         window.can = this.cameras;
         objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collider: true });
+        // CHAR _ COLLIDER
         this.physics.add.collider(this.character, objcollider);
+        // ATACK _ COLLIDER
         this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
+        // ENEMY _ COLLIDER
         this.physics.add.collider(this.enemies, objcollider);
         this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision, undefined, this);
         this.physics.add.collider(this.items, objcollider);
@@ -94,18 +125,16 @@ export default class PlayScene extends Phaser.Scene {
     }
     handleAtackWallCollision(obj1, obj2) {
         this.atackes.killAndHide(obj1);
-        obj1.destroy();
+        obj1.setActive(false).setVisible(false);
     }
     handleAtackeCollision(obj1, obj2) {
-        console.dir({ obj1, obj2 });
         const random = Phaser.Math.Between(0, 10);
-        console.log(random);
-        if (random <= 4) {
+        if (random <= 2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
         }
-        this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1');
+        // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
         obj2.destroy();
-        obj1.destroy();
+        obj1.setActive(false).setVisible(false);
     }
     handlePlayerEnemyCollision(obj1, obj2) {
         var _a;
@@ -129,6 +158,14 @@ export default class PlayScene extends Phaser.Scene {
         obj2.destroy();
     }
     update(time, delta) {
+        this.hodeds.getChildren().forEach((hoded) => {
+            //@ts-ignore
+            hoded.moveTowardsPlayer(this.character);
+        });
+        this.gargules.getChildren().forEach((gargule) => {
+            //@ts-ignore
+            gargule.moveTowardsPlayer(this.character);
+        });
         if (this.character) {
             this.character.update(this.cursor, this);
         }

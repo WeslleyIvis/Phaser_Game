@@ -31,5 +31,15 @@ const createSpells = (anims) => {
             end: 149
         }),
     });
+    anims.create({
+        key: 'fire-bal',
+        frameRate: 10,
+        repeat: -1,
+        frames: anims.generateFrameNames('magicEffect', {
+            prefix: 'effect_',
+            start: 51,
+            end: 54
+        })
+    });
 };
 export { createSpells };
