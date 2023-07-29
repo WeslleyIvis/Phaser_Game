@@ -1,5 +1,5 @@
 import { CST } from "../CST";
-import { createHodedAnims, createBatAnims } from "../anims/EnemyAnims";
+import { createEnemiesAnims } from "../anims/EnemyAnims";
 import { createCharacterAnims } from "../anims/CharacterAnims";
 import { createSpells } from "../anims/SpellsAnims";
 
@@ -12,7 +12,8 @@ import Bat from "../enemies/Bat";
 
 import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
-import HealthBar from "./HealthBar";
+import Gargule from "../enemies/Gargule";
+import Projectile from "../enemies/projectile";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     private character!: Character;
@@ -23,12 +24,76 @@ export default class PlayScene extends Phaser.Scene {
 
     private enemies!: Phaser.Physics.Arcade.Group
 
-    private healthBars!: Phaser.GameObjects.Group
+    private hodeds!: Phaser.Physics.Arcade.Group
+    private bats!: Phaser.Physics.Arcade.Group
+
+    private gargules!: Phaser.Physics.Arcade.Group
+    private enemieProjectile!: Phaser.Physics.Arcade.Group
 
     private playerCollider?: Phaser.Physics.Arcade.Collider
 
     constructor() {
         super({key: CST.SCENES.PLAY})
+    }
+
+    createGroupsEnemies()
+    {
+        this.enemieProjectile = this.physics.add.group({
+            classType: Projectile,
+            runChildUpdate: true,
+        })
+
+        this.hodeds = this.physics.add.group({
+            classType: Hoded,
+            createCallback: (go) => {
+                const hodedgo = go as Hoded
+                hodedgo.setSize(30,50).setOffset(10, 20)
+                go.body.onCollide = true
+            }
+        })
+
+        this.bats = this.physics.add.group({
+            classType: Bat, 
+            createCallback: (go) => {
+                const batgo = go as Bat
+                batgo.setSize(47,40).setOffset(0, 10).setScale(.9),               
+                (batgo.body as Phaser.Physics.Arcade.Body).onCollide = true
+            }
+        })
+
+        this.gargules = this.physics.add.group({
+            classType: Gargule,
+            createCallback: (go) => {
+                const gargule = go as Gargule
+                gargule.setAtackes(this.enemieProjectile)
+
+                gargule.atackEvent = this.time.addEvent({
+                    delay: Phaser.Math.Between(1000, 3000),
+                    callback: () => {
+                        gargule.throwFire(this.character)
+                    },
+                    loop: true
+                })
+        
+            }
+        })
+
+        this.enemies = this.physics.add.group()
+    }
+
+    createCharacter()
+    {
+        this.atackes = this.physics.add.group({
+            classType: Phaser.Physics.Arcade.Sprite,
+            maxSize: 6,
+            createCallback: (go) => {
+                this.anims.play('star', go)
+            }
+        });
+
+        this.character = this.add.character(700, 100, 'characters')
+        this.character.setAtackes(this.atackes)     
+        window.char = this.character     
     }
 
     preload() {
@@ -45,49 +110,20 @@ export default class PlayScene extends Phaser.Scene {
 
         createSpells(this.anims)
         createCharacterAnims(this.anims)
-        createHodedAnims(this.anims)
-        createBatAnims(this.anims)
-
-        this.atackes = this.physics.add.group({
-            classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 6,
-            createCallback: (go) => {
-                this.anims.play('star', go)
-            }
-        });
+        createEnemiesAnims(this.anims)
 
         this.items = this.physics.add.group({
             classType: Item
         })
 
-        this.character = this.add.character(700, 100, 'characters')
-        this.character.setAtackes(this.atackes)
+        this.createCharacter()
+        this.createGroupsEnemies() 
         
-        window.char = this.character
-        
-        const hodeds = this.physics.add.group({
-            classType: Hoded,
-            createCallback: (go) => {
-                const hodedgo = go as Hoded
-                hodedgo.setSize(30,50).setOffset(10, 20)
-                go.body.onCollide = true
-            }
-        })
-
-        this.enemies = this.physics.add.group({
-            classType: Bat, 
-            createCallback: (go) => {
-                const batgo = go as Bat
-                batgo.setSize(47,40).setOffset(0, 10).setScale(.9),               
-                (batgo.body as Phaser.Physics.Arcade.Body).onCollide = true
-            }
-        })
-
-        hodeds.get(400, 400, 'enemies', 'demon-gargoyle-front1')
-
-        for(let x = 0; x < 5; x++)
+        for(let x = 0; x < 3; x++)
         {
-            this.enemies.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')
+            this.enemies.add(this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
+            this.enemies.add(this.hodeds.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
+            this.enemies.add(this.gargules.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
         }
         
         const map = this.add.tilemap("map")
@@ -103,6 +139,7 @@ export default class PlayScene extends Phaser.Scene {
         const tileColliderGroup = map.getObjectLayer('tiles_collider')
         const staticTileGroup = this.physics.add.staticGroup()
 
+        //Cria colisão para todos os objetos do tileMap
         tileColliderGroup?.objects.forEach((tile) => {
             const objectX = tile.x as number + (tile.width as number) / 2; // Adiciona a metade da largura para centralizar o objeto
             const objectY = tile.y as number + (tile.height as number)  / 2; // Adiciona a metade da altura para centralizar o objeto
@@ -126,17 +163,19 @@ export default class PlayScene extends Phaser.Scene {
 
         window.can = this.cameras
 
-        objcollider?.setCollisionByProperty({collider: true})
+        objcollider?.setCollisionByProperty({collider: true}) 
         
-        
-        
+        // CHAR _ COLLIDER
         this.physics.add.collider(this.character, objcollider as Phaser.Tilemaps.TilemapLayer)
         
+        // ATACK _ COLLIDER
         this.physics.add.collider(this.atackes, objcollider as Phaser.Tilemaps.TilemapLayer, this.handleAtackWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
         
         this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
+        // ENEMY _ COLLIDER
         this.physics.add.collider(this.enemies, objcollider as Phaser.Tilemaps.TilemapLayer);
+
         this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
         this.physics.add.collider(this.items, objcollider as Phaser.Tilemaps.TilemapLayer)
@@ -144,25 +183,22 @@ export default class PlayScene extends Phaser.Scene {
         
     }  
 
-    private handleAtackWallCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
+    private handleAtackWallCollision(obj1: Phaser.GameObjects.Sprite, obj2: Phaser.GameObjects.GameObject) {
         this.atackes.killAndHide(obj1)
-        obj1.destroy()
+        obj1.setActive(false).setVisible(false)
     }
     
-    private handleAtackeCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.Physics.Arcade.Sprite) {
-        console.dir({obj1, obj2})
-
+    private handleAtackeCollision(obj1: Phaser.GameObjects.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
         const random = Phaser.Math.Between(0, 10)
-        console.log(random)
 
-        if(random <=4) {
+        if(random <=2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
         }
 
-        this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
+        // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
 
         obj2.destroy()
-        obj1.destroy()
+        obj1.setActive(false).setVisible(false)
     }
 
     private handlePlayerEnemyCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.Sprite) {
@@ -190,14 +226,23 @@ export default class PlayScene extends Phaser.Scene {
             this.character.recoverHealth();
             obj2.destroy();
         }
-
-        
+     
         sceneEvents.emit('update-max-health-changed', this.character.health, this.character.maxHealth)
         obj2.destroy();
     }
 
     
     update(time: any, delta: any) { //delta 16.666 @ 60fps
+
+        this.hodeds.getChildren().forEach((hoded) => {
+            //@ts-ignore
+            hoded.moveTowardsPlayer(this.character)
+        })
+
+        this.gargules.getChildren().forEach((gargule) => {
+            //@ts-ignore
+            gargule.moveTowardsPlayer(this.character)
+        })
 
         if(this.character) {
             this.character.update(this.cursor, this)
