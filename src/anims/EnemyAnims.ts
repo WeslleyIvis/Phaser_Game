@@ -1,7 +1,7 @@
 //@ts-ignore
 import Phaser from "lib/phaser"
 
-const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
+const createEnemiesAnims = (anims: Phaser.Animations.AnimationManager) => {
     anims.create({
         key: 'assassin-down',
         frameRate: 6,
@@ -45,9 +45,9 @@ const createHodedAnims = (anims: Phaser.Animations.AnimationManager) => {
             end: 2
         })
     }) 
-}
 
-const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
+    // -- // 
+
     anims.create({
         key: 'bat-front',
         frameRate: 6,
@@ -91,9 +91,54 @@ const createBatAnims = (anims: Phaser.Animation.AnimationManager) => {
             end: 2
         })
     })
+
+    // -- //
+
+    anims.create({
+        key: 'gargoyle-up',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'demon-gargoyle-back',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'gargoyle-down',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'demon-gargoyle-front',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'gargoyle-left',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'demon-gargoyle-left',
+            start: 0,
+            end: 2
+        })
+    })
+
+    anims.create({
+        key: 'gargoyle-right',
+        frameRate: 6,
+        repeat: -1,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'demon-gargoyle-right',
+            start: 0,
+            end: 2
+        })
+    })
 }
 
 export {
-    createHodedAnims,
-    createBatAnims
+    createEnemiesAnims
 }
