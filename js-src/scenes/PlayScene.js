@@ -23,7 +23,6 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const hodedgo = go;
                 hodedgo.setSize(30, 50).setOffset(10, 20);
-                hodedgo.update(this.character);
             }
         });
         this.bats = this.physics.add.group({
@@ -139,7 +138,7 @@ export default class PlayScene extends Phaser.Scene {
         if (random <= 2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
         }
-        sceneEvents.emit('update-count-atackes', this.character.maxAtackes - this.atackes.getChildren().length);
+        sceneEvents.emit('update-count-atackes', this.character.maxAtackes + 1 - this.atackes.getChildren().length);
         // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
         obj2.destroy();
         obj1.destroy();
