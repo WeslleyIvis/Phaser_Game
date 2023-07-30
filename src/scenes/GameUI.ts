@@ -4,7 +4,9 @@ import { sceneEvents } from "../events/EventCenter"
 export default class GameUI extends Phaser.Scene {
     //@ts-ignore
     private hearts: Phaser.GameObjects.Group;
+    private atackes: Phaser.GameObjects.Text
     amountHearts = 3;
+    amoutAtackes = 0;
 
     constructor()
     {
@@ -35,9 +37,13 @@ export default class GameUI extends Phaser.Scene {
             heart.setScale(2)
         })
 
+        this.atackes = this.add.text(45, 70, `X ${3}`)
+
         sceneEvents.on('player-health-changed', this.handlePlayerHealthChanged, this)
 
         sceneEvents.on('update-max-health-changed', this.updateHeartCount, this)
+
+        sceneEvents.on('update-count-atackes', this.countAtackes, this)
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             sceneEvents.off('player-health-changed', this.handlePlayerHealthChanged, this)
@@ -90,4 +96,8 @@ export default class GameUI extends Phaser.Scene {
         })
     }
     
+    private countAtackes(amount: number)
+    {
+        this.atackes.text = `X ${amount}`
+    }
 }
