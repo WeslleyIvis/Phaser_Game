@@ -48,7 +48,6 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const hodedgo = go as Hoded
                 hodedgo.setSize(30,50).setOffset(10, 20)
-                go.body.onCollide = true
             }
         })
 
@@ -66,7 +65,7 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const gargule = go as Gargule
                 gargule.setAtackes(this.enemieProjectile)
-
+                
                 gargule.atackEvent = this.time.addEvent({
                     delay: Phaser.Math.Between(1000, 3000),
                     callback: () => {
@@ -74,7 +73,6 @@ export default class PlayScene extends Phaser.Scene {
                     },
                     loop: true
                 })
-        
             }
         })
 
@@ -83,17 +81,17 @@ export default class PlayScene extends Phaser.Scene {
 
     createCharacter()
     {
+        this.character = this.add.character(700, 100, 'characters')
+        
         this.atackes = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 6,
+            maxSize: this.character.maxAtackes,
             createCallback: (go) => {
                 this.anims.play('star', go)
             }
         });
-
-        this.character = this.add.character(700, 100, 'characters')
-        this.character.setAtackes(this.atackes)     
-        window.char = this.character     
+        
+        this.character.setAtackes(this.atackes)          
     }
 
     preload() {
@@ -169,9 +167,18 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.character, objcollider as Phaser.Tilemaps.TilemapLayer)
         
         // ATACK _ COLLIDER
+        this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+
         this.physics.add.collider(this.atackes, objcollider as Phaser.Tilemaps.TilemapLayer, this.handleAtackWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
         
-        this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        this.physics.add.collider(this.atackes,staticTileGroup, this.handleAtackWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+
+        this.physics.add.collider(this.enemieProjectile, this.character, this.handlePlayerProjectileCollision as Phaser.Types.Physics.Arcade
+            .ArcadePhysicsCallback, undefined, this)
+
+        this.physics.add.collider(this.enemieProjectile, objcollider as Phaser.Tilemaps.TilemapLayer, this.handleProjectileWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+
+        this.physics.add.collider(this.enemieProjectile, staticTileGroup, this.handleProjectileWallCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
 
         // ENEMY _ COLLIDER
         this.physics.add.collider(this.enemies, objcollider as Phaser.Tilemaps.TilemapLayer);
@@ -183,22 +190,32 @@ export default class PlayScene extends Phaser.Scene {
         
     }  
 
-    private handleAtackWallCollision(obj1: Phaser.GameObjects.Sprite, obj2: Phaser.GameObjects.GameObject) {
-        this.atackes.killAndHide(obj1)
-        obj1.setActive(false).setVisible(false)
+    private handleAtackWallCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
+        //this.atackes.killAndHide(obj1)
+
+        sceneEvents.emit('update-count-atackes',  this.character.maxAtackes + 1 - this.atackes.getChildren().length)
+
+        obj1.destroy()
+    }
+
+    private handleProjectileWallCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite)
+    {
+        obj1.destroy()
     }
     
-    private handleAtackeCollision(obj1: Phaser.GameObjects.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
+    private handleAtackeCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
         const random = Phaser.Math.Between(0, 10)
 
         if(random <=2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
         }
 
+        sceneEvents.emit('update-count-atackes',  this.character.maxAtackes + 1 - this.atackes.getChildren().length)
+
         // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
 
-        obj2.destroy()
-        obj1.setActive(false).setVisible(false)
+        obj2.destroy()  
+        obj1.destroy()
     }
 
     private handlePlayerEnemyCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.Sprite) {
@@ -206,6 +223,22 @@ export default class PlayScene extends Phaser.Scene {
 
         const dx = this.character.x - bat.x
         const dy = this.character.y - bat.y
+
+        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200)
+        this.character.handleDamege(dir)
+
+        sceneEvents.emit('player-health-changed', this.character.health)
+
+        if(this.character.health <= 0)
+        {
+            this.playerCollider?.destroy();
+        }
+    }
+
+    private handlePlayerProjectileCollision(player: Phaser.GameObjects.GameObject, procjetile: Phaser.Physics.Arcade.Sprite)
+    {
+        const dx = this.character.x - procjetile.x
+        const dy = this.character.y - procjetile.y
 
         const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200)
 
@@ -217,6 +250,8 @@ export default class PlayScene extends Phaser.Scene {
         {
             this.playerCollider?.destroy();
         }
+
+        procjetile.destroy();
     }
 
     handleItemCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
@@ -233,16 +268,13 @@ export default class PlayScene extends Phaser.Scene {
 
     
     update(time: any, delta: any) { //delta 16.666 @ 60fps
-
         this.hodeds.getChildren().forEach((hoded) => {
-            //@ts-ignore
-            hoded.moveTowardsPlayer(this.character)
-        })
-
+            hoded.update(this.character);
+        });
+        
         this.gargules.getChildren().forEach((gargule) => {
-            //@ts-ignore
-            gargule.moveTowardsPlayer(this.character)
-        })
+            gargule.update(this.character);
+        });
 
         if(this.character) {
             this.character.update(this.cursor, this)
