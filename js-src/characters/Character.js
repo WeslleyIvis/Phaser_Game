@@ -2,6 +2,7 @@
 A linha declare global é usada para adicionar uma declaração global ao escopo do TypeScript.
     Em seguida, é definido um namespace Phaser.GameObjects com uma interface GameObjectFactory que estende o GameObjectFactory do Phaser. A interface adiciona um novo método chamado character ao GameObjectFactory.
  */
+import { sceneEvents } from "../events/EventCenter";
 // Estados numerados do objeto Character
 var HealthState;
 (function (HealthState) {
@@ -24,8 +25,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this.healthState = HealthState.IDLE;
         this.damageTime = 0;
         this._health = 3;
-        this.maxHealth = 5;
-        this.velocity = 300;
+        this.maxHealth = 3;
+        this.maxAtackes = 3;
+        this.velocity = 100;
         this.experience = 0;
         this.lv = 1;
         this.setFrame('char_247');
@@ -61,9 +63,8 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         }
     }
     throwAtack(scene) {
-        if (!this.atackes) {
+        if (!this.atackes)
             return;
-        }
         const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
         if (!atack) {
             return;
@@ -78,7 +79,13 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         atack.setVelocity(vec.x * 300, vec.y * 300);
     }
     cursorAtack(cursor) {
+        if (!this.atackes)
+            return;
         const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
+        if (!atack)
+            return;
+        console.log({ g: this.atackes, ng: this.atackes.getChildren().length });
+        sceneEvents.emit('update-count-atackes', this.maxAtackes - this.atackes.getChildren().length);
         const directionX = cursor.worldX - this.x;
         const directionY = cursor.worldY - this.y;
         /*
