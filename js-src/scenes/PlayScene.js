@@ -23,7 +23,7 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const hodedgo = go;
                 hodedgo.setSize(30, 50).setOffset(10, 20);
-                go.body.onCollide = true;
+                hodedgo.update(this.character);
             }
         });
         this.bats = this.physics.add.group({
@@ -51,16 +51,15 @@ export default class PlayScene extends Phaser.Scene {
         this.enemies = this.physics.add.group();
     }
     createCharacter() {
+        this.character = this.add.character(700, 100, 'characters');
         this.atackes = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: 6,
+            maxSize: this.character.maxAtackes,
             createCallback: (go) => {
                 this.anims.play('star', go);
             }
         });
-        this.character = this.add.character(700, 100, 'characters');
         this.character.setAtackes(this.atackes);
-        window.char = this.character;
     }
     preload() {
         //console.log(this.textures.list)     x
@@ -115,8 +114,12 @@ export default class PlayScene extends Phaser.Scene {
         // CHAR _ COLLIDER
         this.physics.add.collider(this.character, objcollider);
         // ATACK _ COLLIDER
-        this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
+        this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
+        this.physics.add.collider(this.atackes, staticTileGroup, this.handleAtackWallCollision, undefined, this);
+        this.physics.add.collider(this.enemieProjectile, this.character, this.handlePlayerProjectileCollision, undefined, this);
+        this.physics.add.collider(this.enemieProjectile, objcollider, this.handleProjectileWallCollision, undefined, this);
+        this.physics.add.collider(this.enemieProjectile, staticTileGroup, this.handleProjectileWallCollision, undefined, this);
         // ENEMY _ COLLIDER
         this.physics.add.collider(this.enemies, objcollider);
         this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision, undefined, this);
@@ -124,17 +127,22 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
     handleAtackWallCollision(obj1, obj2) {
-        this.atackes.killAndHide(obj1);
-        obj1.setActive(false).setVisible(false);
+        //this.atackes.killAndHide(obj1)
+        sceneEvents.emit('update-count-atackes', this.character.maxAtackes + 1 - this.atackes.getChildren().length);
+        obj1.destroy();
+    }
+    handleProjectileWallCollision(obj1, obj2) {
+        obj1.destroy();
     }
     handleAtackeCollision(obj1, obj2) {
         const random = Phaser.Math.Between(0, 10);
         if (random <= 2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
         }
+        sceneEvents.emit('update-count-atackes', this.character.maxAtackes - this.atackes.getChildren().length);
         // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
         obj2.destroy();
-        obj1.setActive(false).setVisible(false);
+        obj1.destroy();
     }
     handlePlayerEnemyCollision(obj1, obj2) {
         var _a;
@@ -148,6 +156,18 @@ export default class PlayScene extends Phaser.Scene {
             (_a = this.playerCollider) === null || _a === void 0 ? void 0 : _a.destroy();
         }
     }
+    handlePlayerProjectileCollision(player, procjetile) {
+        var _a;
+        const dx = this.character.x - procjetile.x;
+        const dy = this.character.y - procjetile.y;
+        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+        this.character.handleDamege(dir);
+        sceneEvents.emit('player-health-changed', this.character.health);
+        if (this.character.health <= 0) {
+            (_a = this.playerCollider) === null || _a === void 0 ? void 0 : _a.destroy();
+        }
+        procjetile.destroy();
+    }
     handleItemCollision(obj1, obj2) {
         // Pega
         if (this.character.health < this.character.maxHealth) {
@@ -159,12 +179,10 @@ export default class PlayScene extends Phaser.Scene {
     }
     update(time, delta) {
         this.hodeds.getChildren().forEach((hoded) => {
-            //@ts-ignore
-            hoded.moveTowardsPlayer(this.character);
+            hoded.update(this.character);
         });
         this.gargules.getChildren().forEach((gargule) => {
-            //@ts-ignore
-            gargule.moveTowardsPlayer(this.character);
+            gargule.update(this.character);
         });
         if (this.character) {
             this.character.update(this.cursor, this);
