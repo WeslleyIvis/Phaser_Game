@@ -12,6 +12,7 @@ export default class Gargule extends Phaser.Physics.Arcade.Sprite {
     private projectiles!: Phaser.Physics.Arcade.Group
     atackEvent!: Phaser.Time.TimerEvent
     
+    
     private speed: number = 60
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame: string | number) {
@@ -20,6 +21,17 @@ export default class Gargule extends Phaser.Physics.Arcade.Sprite {
 
     setAtackes(projectiles: Phaser.Physics.Arcade.Group) {
         this.projectiles = projectiles
+    }
+
+    intervalThrowAtack(player: Phaser.GameObjects.Sprite)
+    {
+        this.atackEvent = this.scene.time.addEvent({
+            delay: Phaser.Math.Between(1000, 3000),
+            callback: () => {
+                this.throwFire(player)
+            },
+            loop: true
+        })
     }
 
     throwFire(player: Phaser.GameObjects.Sprite)

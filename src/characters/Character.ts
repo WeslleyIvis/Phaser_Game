@@ -35,6 +35,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private _health = 3;
     atackes!: Phaser.Physics.Arcade.Group
     
+    atackPower = 1;
+    atackSpeed = 1;
+
     maxHealth: number = 3;
     maxAtackes = 3
     velocity: number = 100;
@@ -269,9 +272,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     }
 }
 
-/*
-     o método Phaser.GameObjects.GameObjectFactory.register é usado para registrar a criação do objeto character no GameObjectFactory do Phaser. Ele cria uma nova instância da classe Character, configura sua física e adiciona à lista de exibição e atualização do Phaser.
-*/
 Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, texture: string, frame?: string | number) {
     var sprite = new Character(this.scene, x, y, texture, frame);
 
