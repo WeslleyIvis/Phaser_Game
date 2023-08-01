@@ -14,6 +14,15 @@ export default class Gargule extends Phaser.Physics.Arcade.Sprite {
     setAtackes(projectiles) {
         this.projectiles = projectiles;
     }
+    intervalThrowAtack(player) {
+        this.atackEvent = this.scene.time.addEvent({
+            delay: Phaser.Math.Between(1000, 3000),
+            callback: () => {
+                this.throwFire(player);
+            },
+            loop: true
+        });
+    }
     throwFire(player) {
         const vec = new Phaser.Math.Vector2(player.x - this.x, player.y - this.y);
         vec.normalize();

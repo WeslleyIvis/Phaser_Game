@@ -38,13 +38,7 @@ export default class PlayScene extends Phaser.Scene {
             createCallback: (go) => {
                 const gargule = go;
                 gargule.setAtackes(this.enemieProjectile);
-                gargule.atackEvent = this.time.addEvent({
-                    delay: Phaser.Math.Between(1000, 3000),
-                    callback: () => {
-                        gargule.throwFire(this.character);
-                    },
-                    loop: true
-                });
+                gargule.intervalThrowAtack(this.character);
             }
         });
         this.enemies = this.physics.add.group();
