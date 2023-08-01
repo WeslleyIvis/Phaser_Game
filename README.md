@@ -49,3 +49,6 @@ Tudo que é você precisa para desenvolver um jogo com JavaScript...
             animationrepeat
             animationupdate
             animationcomplete
+
+![image](https://github.com/WeslleyIvis/Phaser_Game/assets/79803635/f2de4619-8bdd-4ffc-84ce-27f544d50216)
+
