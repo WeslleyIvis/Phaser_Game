@@ -14,6 +14,7 @@ export default class Gargule extends Phaser.Physics.Arcade.Sprite {
     
     
     private speed: number = 60
+    heart = 5
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame: string | number) {
         super(scene, x, y, texture, frame)
