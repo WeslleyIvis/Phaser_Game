@@ -10,6 +10,7 @@ export default class Gargule extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture, frame);
         this.direction = Direction.LEFT;
         this.speed = 60;
+        this.heart = 5;
     }
     setAtackes(projectiles) {
         this.projectiles = projectiles;
