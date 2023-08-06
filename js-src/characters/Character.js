@@ -32,7 +32,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this.velocity = 100;
         this.experience = 0;
         this.lv = 1;
-        this.setFrame('char_247');
+        this.setFrame('char_1');
         scene.input.on('pointerdown', (cursor) => {
             this.cursorAtack(cursor);
         });
@@ -221,7 +221,7 @@ Phaser.GameObjects.GameObjectFactory.register('character', function (x, y, textu
     Definição de um deslocamento (setOffset) e tamanho (setSize) para o corpo físico do objeto 'sprite'
     */
     (_a = sprite.body) === null || _a === void 0 ? void 0 : _a.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10);
-    sprite.setScale(0.9);
+    sprite.setScale(0.7);
     sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).

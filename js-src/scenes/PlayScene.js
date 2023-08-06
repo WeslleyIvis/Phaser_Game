@@ -12,6 +12,7 @@ import Projectile from "../enemies/projectile";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
+        this.layersCollider = [];
     }
     createGroupsEnemies() {
         this.enemieProjectile = this.physics.add.group({
@@ -53,6 +54,7 @@ export default class PlayScene extends Phaser.Scene {
             }
         });
         this.character.setAtackes(this.atackes);
+        window.char = this.character;
     }
     preload() {
         //console.log(this.textures.list)     x
@@ -72,17 +74,22 @@ export default class PlayScene extends Phaser.Scene {
         });
         this.createCharacter();
         this.createGroupsEnemies();
-        for (let x = 0; x < 3; x++) {
-            this.enemies.add(this.bats.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1'));
-            this.enemies.add(this.hodeds.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'));
-            this.enemies.add(this.gargules.get(Phaser.Math.Between(400, 800), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'));
-        }
+        // for(let x = 0; x < 3; x++)
+        // {
+        //     this.enemies.add(this.bats.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
+        //     this.enemies.add(this.hodeds.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
+        //     this.enemies.add(this.gargules.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
+        // }
+        this.items.create(300, 300, 'itens', 'equip_14');
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
         const ground = (_a = map.createLayer("floor", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-2);
-        const groundAbove = (_b = map.createLayer('floor_above', tileset, 0, 0)) === null || _b === void 0 ? void 0 : _b.setDepth(-1);
-        const shadow = map.createLayer("shadow", tileset, 0, 0);
+        const waterLayer = map.createLayer("water_above", tileset, 0, 0);
         const objcollider = map.createLayer("collider", tileset, 0, 0);
+        const shadow = map.createLayer("shadow", tileset, 0, 0);
+        const groundAbove = map.createLayer('floor_above', tileset, 0, 0);
+        const objcollider_1 = map.createLayer("collider_1", tileset, 0, 0);
+        const objabove_1 = (_b = map.createLayer("above_1", tileset, 0, 0)) === null || _b === void 0 ? void 0 : _b.setDepth(2);
         const objabove = (_c = map.createLayer("above", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(3);
         const tileColliderGroup = map.getObjectLayer('tiles_collider');
         const staticTileGroup = this.physics.add.staticGroup();
@@ -101,22 +108,32 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        this.cameras.main.setZoom(1.2);
+        this.cameras.main.setZoom(1.5);
         window.can = this.cameras;
-        objcollider === null || objcollider === void 0 ? void 0 : objcollider.setCollisionByProperty({ collider: true });
-        // CHAR _ COLLIDER
-        this.physics.add.collider(this.character, objcollider);
+        this.layersCollider.push(objcollider);
+        this.layersCollider.push(objcollider_1);
+        this.layersCollider.forEach(layer => {
+            layer === null || layer === void 0 ? void 0 : layer.setCollisionByProperty({ collider: true });
+        });
+        // TILE _ COLLIDER
+        this.layersCollider.forEach(layerCollider => {
+            this.physics.add.collider(this.character, layerCollider);
+            this.physics.add.collider(this.atackes, layerCollider, this.handleAtackWallCollision, undefined, this);
+            this.physics.add.collider(this.enemieProjectile, layerCollider, this.handleProjectileWallCollision, undefined, this);
+        });
+        this.enemies.getChildren().forEach(enemie => {
+            var _a;
+            (_a = this.layersCollider) === null || _a === void 0 ? void 0 : _a.forEach(layer => {
+                this.physics.add.collider(enemie, layer);
+            });
+        });
         // ATACK _ COLLIDER
         this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
-        this.physics.add.collider(this.atackes, objcollider, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.atackes, staticTileGroup, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.enemieProjectile, this.character, this.handlePlayerProjectileCollision, undefined, this);
-        this.physics.add.collider(this.enemieProjectile, objcollider, this.handleProjectileWallCollision, undefined, this);
         this.physics.add.collider(this.enemieProjectile, staticTileGroup, this.handleProjectileWallCollision, undefined, this);
         // ENEMY _ COLLIDER
-        this.physics.add.collider(this.enemies, objcollider);
         this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision, undefined, this);
-        this.physics.add.collider(this.items, objcollider);
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
     handleAtackWallCollision(obj1, obj2) {

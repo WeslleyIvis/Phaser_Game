@@ -25,6 +25,7 @@ export default class Bat extends Phaser.Physics.Arcade.Sprite {
             },
             loop: true
         });
+        this.setDepth(1);
     }
     // Destroi os eventos do objeto
     destroy(fromScene) {

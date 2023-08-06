@@ -1,19 +1,19 @@
 const createCharacterAnims = (anims) => {
     anims.create({
         key: 'char-idle-down',
-        frames: [{ key: 'characters', frame: 'char_247' }]
+        frames: [{ key: 'characters', frame: 'char_1' }]
     });
     anims.create({
         key: 'char-idle-up',
-        frames: [{ key: 'characters', frame: 'char_283' }]
+        frames: [{ key: 'characters', frame: 'char_37' }]
     });
     anims.create({
         key: 'char-idle-left',
-        frames: [{ key: 'characters', frame: 'char_259' }]
+        frames: [{ key: 'characters', frame: 'char_13' }]
     });
     anims.create({
         key: 'char-idle-right',
-        frames: [{ key: 'characters', frame: 'char_271' }]
+        frames: [{ key: 'characters', frame: 'char_25' }]
     });
     anims.create({
         key: 'char-run-down',
@@ -21,8 +21,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 246,
-            end: 248
+            start: 0,
+            end: 2
         })
     });
     anims.create({
@@ -31,8 +31,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 282,
-            end: 284
+            start: 36,
+            end: 38
         })
     });
     anims.create({
@@ -41,8 +41,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 258,
-            end: 260
+            start: 12,
+            end: 14
         })
     });
     anims.create({
@@ -51,8 +51,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 270,
-            end: 272
+            start: 24,
+            end: 26
         })
     });
     anims.create({
@@ -61,8 +61,8 @@ const createCharacterAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('characters', {
             prefix: 'char_',
-            start: 429,
-            end: 431
+            start: 12,
+            end: 14
         })
     });
 };
