@@ -33,6 +33,8 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private damageTime = 0;
 
     private _health = 3;
+    private weapon?: Phaser.GameObjects.Sprite
+
     atackes!: Phaser.Physics.Arcade.Group
     
     atackPower = 1;
@@ -54,7 +56,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame)
-        this.setFrame('char_247')
+        this.setFrame('char_1')
 
         scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
             this.cursorAtack(cursor)
@@ -292,7 +294,7 @@ Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser
   */
     sprite.body?.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10)
 
-    sprite.setScale(0.9)
+    sprite.setScale(0.7)
     sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
