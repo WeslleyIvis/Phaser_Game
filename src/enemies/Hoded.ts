@@ -22,7 +22,8 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture, frame)
 
         scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileColision, this)
- 
+
+        this.setDepth(1)
     }
 
     private handleTileColision(go: Phaser.GameObjects.GameObject, tile: Phaser.Tilemaps.Tile) 
