@@ -9,6 +9,7 @@ import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
 import Gargule from "../enemies/Gargule";
 import Projectile from "../enemies/projectile";
+import Sword from "../items/Sword";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
@@ -80,7 +81,15 @@ export default class PlayScene extends Phaser.Scene {
         //     this.enemies.add(this.hodeds.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
         //     this.enemies.add(this.gargules.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
         // }
-        this.items.create(300, 300, 'itens', 'equip_14');
+        const swords = this.add.group({
+            classType: Sword,
+            createCallback: (go) => {
+                const sword = go;
+                sword.setScale(.75);
+                this.character.setWeapon(sword);
+            }
+        });
+        swords.create(this.character.x, this.character.y, 'itens', 'equip_14', false, false);
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
         const ground = (_a = map.createLayer("floor", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-2);
@@ -108,7 +117,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        this.cameras.main.setZoom(1.5);
+        this.cameras.main.setZoom(1.2);
         window.can = this.cameras;
         this.layersCollider.push(objcollider);
         this.layersCollider.push(objcollider_1);

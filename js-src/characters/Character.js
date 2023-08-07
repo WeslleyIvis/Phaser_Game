@@ -1,7 +1,3 @@
-/*
-A linha declare global é usada para adicionar uma declaração global ao escopo do TypeScript.
-    Em seguida, é definido um namespace Phaser.GameObjects com uma interface GameObjectFactory que estende o GameObjectFactory do Phaser. A interface adiciona um novo método chamado character ao GameObjectFactory.
- */
 import { sceneEvents } from "../events/EventCenter";
 // Estados numerados do objeto Character
 var HealthState;
@@ -14,12 +10,6 @@ var HealthState;
     A classe Character é definida, que herda da classe Phaser.Physics.Arcade.Sprite. Ela contém propriedades e métodos relacionados ao personagem do jogo.
 */
 export default class Character extends Phaser.Physics.Arcade.Sprite {
-    get health() {
-        return this._health;
-    }
-    recoverHealth() {
-        this._health++;
-    }
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
         this.healthState = HealthState.IDLE;
@@ -36,6 +26,19 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerdown', (cursor) => {
             this.cursorAtack(cursor);
         });
+    }
+    get health() {
+        return this._health;
+    }
+    recoverHealth() {
+        this._health++;
+    }
+    setWeapon(weapon) {
+        this.weapon = weapon;
+    }
+    toggleActiveWeapon() {
+        var _a;
+        (_a = this.weapon) === null || _a === void 0 ? void 0 : _a.setActive(true).setVisible(true).setDepth(1);
     }
     setAtackes(atackes) {
         this.atackes = atackes;
@@ -107,6 +110,17 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         // Define a rotação do ataque para a direção do cursor -- Radianos
         const angle = Phaser.Math.RadToDeg(Math.atan2(normalizedDirectionY, normalizedDirectionX));
         atack.setRotation(angle);
+        if (this.weapon) {
+            const angle1 = this.currentAngle();
+            this.weapon.x = this.x + (angle1.x * 20);
+            this.weapon.y = this.y + (angle1.y * 35);
+            this.weapon.setRotation(angle);
+            this.toggleActiveWeapon();
+            setTimeout(() => {
+                var _a;
+                (_a = this.weapon) === null || _a === void 0 ? void 0 : _a.setActive(false).setVisible(false);
+            }, 1000);
+        }
     }
     /*
     Pega a direção do personagem em angulos com base na direção que ele se movimentou pela última vez
@@ -221,7 +235,7 @@ Phaser.GameObjects.GameObjectFactory.register('character', function (x, y, textu
     Definição de um deslocamento (setOffset) e tamanho (setSize) para o corpo físico do objeto 'sprite'
     */
     (_a = sprite.body) === null || _a === void 0 ? void 0 : _a.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10);
-    sprite.setScale(0.7);
+    sprite.setScale(0.85);
     sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
