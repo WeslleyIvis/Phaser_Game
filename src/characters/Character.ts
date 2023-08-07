@@ -31,11 +31,11 @@ enum HealthState
 export default class Character extends Phaser.Physics.Arcade.Sprite {
     private healthState = HealthState.IDLE;
     private damageTime = 0;
-
+    private characterCollider?: Phaser.Physics.Arcade.Collider
     private _health = 3;
-    private weapon?: Phaser.GameObjects.Sprite
+    private weapon?: Phaser.Physics.Arcade.Sprite
 
-    atackes!: Phaser.Physics.Arcade.Group
+    private projectiles!: Phaser.Physics.Arcade.Group
     
     atackPower = 1;
     atackSpeed = 1;
@@ -53,6 +53,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
             this.cursorAtack(cursor)
         })
+
+        this.weapon = new Sword(scene, x, y, 'itens', 'equip_14', 10, 10)
+
     }
 
     get health() {
@@ -63,19 +66,55 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this._health++
     }
 
-    setWeapon(weapon: Phaser.GameObjects.Sprite)
+    setWeapon(weapon: Phaser.Physics.Arcade.Sprite)
     {
         this.weapon = weapon
     }
 
-    toggleActiveWeapon()
+    setColliderCharacterGroupEnemies(object: Phaser.Physics.Arcade.Group )
     {
-        this.weapon?.setActive(true).setVisible(true).setDepth(1)
+        this.characterCollider = this.scene.physics.add.collider(this, object, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
     }
 
+    setCharacterColliderGroupProjectiles(object: Phaser.Physics.Arcade.Group )
+    {
+        this.scene.physics.add.collider(this, object, this.handlePlayerEnemyCollision as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+    }
+
+    setLayersCollider(tileLayers?: Phaser.Tilemaps.TilemapLayer | Phaser.Tilemaps.TilemapLayer[], staticObjects?: Phaser.Physics.Arcade.StaticGroup) 
+    {
+        if(typeof tileLayers === 'object')
+        {
+            (tileLayers as Phaser.Tilemaps.TilemapLayer[]).forEach((layer) => {
+                this.scene.physics.add.collider(this, layer)
+                this.scene.physics.add.collider(this.projectiles, layer, this.handleProjectileWallCollider as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+            })
+        } else if(tileLayers)
+        {
+            this.scene.physics.add.collider(this, tileLayers)
+            this.scene.physics.add.collider(this.projectiles, tileLayers, this.handleProjectileWallCollider as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this)
+        }
+
+        if(staticObjects)
+        {
+            staticObjects.getChildren().forEach(object => {
+                this.scene.physics.add.collider(this, object)
+                this.scene.physics.add.collider(this.projectiles, object)
+                this.scene.physics.add.collider(this.weapon!, object)
+            })
+        }
+
+        
+    }
+    
     setAtackes(atackes: Phaser.Physics.Arcade.Group) 
     {
-        this.atackes = atackes;
+        this.projectiles = atackes;
+    }
+
+    private toggleActiveWeapon()
+    {
+        this.weapon?.setActive(true).setVisible(true).setDepth(1)
     }
 
     /*
@@ -111,11 +150,39 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    private handlePlayerEnemyCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.Sprite) {
+
+        const objectCollision = obj2 
+
+        const dx = this.x - objectCollision.x
+        const dy = this.y - objectCollision.y
+
+        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200)
+        this.handleDamege(dir)
+
+        sceneEvents.emit('player-health-changed', this.health)
+
+        if(this.health <= 0)
+        {
+            this.characterCollider?.destroy();
+        }
+
+        if(Object.getPrototypeOf(objectCollision).constructor.name === 'Projectile') 
+        {
+            objectCollision.destroy()
+        }
+    }
+
+    handleProjectileWallCollider(projectile: Phaser.Physics.Arcade.Sprite, tile: Phaser.Physics.Arcade.Sprite)
+    {
+        projectile.destroy()
+    }
+
     private throwAtack(scene: Phaser.Scene) 
     {
-        if(!this.atackes) return
+        if(!this.projectiles) return
 
-        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
+        const atack = this.projectiles.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
 
         if(!atack) {
             return
@@ -132,19 +199,18 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         
         atack.setRotation(angle)
         atack.setVelocity(vec.x * 300, vec.y * 300)        
-
     }
 
     private cursorAtack(cursor: Phaser.Input.Pointer) {
-        if(!this.atackes) return
+        if(!this.projectiles) return
 
-        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
+        const atack = this.projectiles.get(this.x, this.y, 'magicEffect', 'effect_146') as Phaser.Physics.Arcade.Sprite
 
         if(!atack) return 
 
-        console.log({g: this.atackes, ng: this.atackes.getChildren().length})
+        console.log({g: this.projectiles, ng: this.projectiles.getChildren().length})
         
-        sceneEvents.emit('update-count-atackes', this.maxAtackes - this.atackes.getChildren().length)
+        sceneEvents.emit('update-count-atackes', this.maxAtackes - this.projectiles.getChildren().length)
 
         const directionX = cursor.worldX - this.x
         const directionY = cursor.worldY - this.y
@@ -175,8 +241,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
             this.weapon.x = this.x + (angle1.x * 20)
             this.weapon.y = this.y + (angle1.y * 35)
-            this.weapon.setRotation(angle)
             this.toggleActiveWeapon()
+            this.weapon.setRotation(angle)
+            console.log(this.weapon)
             setTimeout(() => {
                 this.weapon?.setActive(false).setVisible(false)
             }, 1000) 
@@ -300,7 +367,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, texture: string, frame?: string | number) {
     var sprite = new Character(this.scene, x, y, texture, frame);
 
-    
     /* 
     Adição do objeto 'sprite' à lista de exibição (displayList) e lista de atualização (updateList) do Phaser. Isso permite que o Phaser saiba quais objetos devem ser renderizados e atualizados no jogo.
     */ 
