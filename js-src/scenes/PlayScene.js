@@ -9,7 +9,7 @@ import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
 import Gargule from "../enemies/Gargule";
 import Projectile from "../enemies/projectile";
-import Sword from "../items/Sword";
+import ConfingScene from "./ConfingScene";
 export default class PlayScene extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.PLAY });
@@ -47,6 +47,8 @@ export default class PlayScene extends Phaser.Scene {
     }
     createCharacter() {
         this.character = this.add.character(700, 100, 'characters');
+        this.character.setColliderCharacterGroupEnemies(this.enemies);
+        this.character.setCharacterColliderGroupProjectiles(this.enemieProjectile);
         this.atackes = this.physics.add.group({
             classType: Phaser.Physics.Arcade.Sprite,
             maxSize: this.character.maxAtackes,
@@ -55,7 +57,6 @@ export default class PlayScene extends Phaser.Scene {
             }
         });
         this.character.setAtackes(this.atackes);
-        window.char = this.character;
     }
     preload() {
         //console.log(this.textures.list)     x
@@ -73,23 +74,13 @@ export default class PlayScene extends Phaser.Scene {
         this.items = this.physics.add.group({
             classType: Item
         });
-        this.createCharacter();
         this.createGroupsEnemies();
-        // for(let x = 0; x < 3; x++)
-        // {
-        //     this.enemies.add(this.bats.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
-        //     this.enemies.add(this.hodeds.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
-        //     this.enemies.add(this.gargules.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
-        // }
-        const swords = this.add.group({
-            classType: Sword,
-            createCallback: (go) => {
-                const sword = go;
-                sword.setScale(.75);
-                this.character.setWeapon(sword);
-            }
-        });
-        swords.create(this.character.x, this.character.y, 'itens', 'equip_14', false, false);
+        this.createCharacter();
+        for (let x = 0; x < 1; x++) {
+            // this.enemies.add(this.bats.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
+            this.enemies.add(this.hodeds.get(Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 250), 'enemies', 'demon-gargoyle-front1'));
+            this.enemies.add(this.gargules.get(Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 250), 'enemies', 'demon-gargoyle-front1'));
+        }
         const map = this.add.tilemap("map");
         const tileset = map.addTilesetImage("textures", "tiles");
         const ground = (_a = map.createLayer("floor", tileset, 0, 0)) === null || _a === void 0 ? void 0 : _a.setDepth(-2);
@@ -111,23 +102,16 @@ export default class PlayScene extends Phaser.Scene {
             tileCollider.setVisible(false);
             tileCollider.setImmovable(true);
         });
-        this.physics.add.collider(this.character, staticTileGroup);
-        this.physics.add.collider(this.enemies, staticTileGroup);
-        this.cameras.main.startFollow(this.character);
-        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        this.cameras.main.setZoom(1.2);
-        window.can = this.cameras;
         this.layersCollider.push(objcollider);
         this.layersCollider.push(objcollider_1);
         this.layersCollider.forEach(layer => {
             layer === null || layer === void 0 ? void 0 : layer.setCollisionByProperty({ collider: true });
         });
+        this.character.setLayersCollider(this.layersCollider);
+        ConfingScene.followCamera(this.cameras, this.character, map);
+        this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         // TILE _ COLLIDER
         this.layersCollider.forEach(layerCollider => {
-            this.physics.add.collider(this.character, layerCollider);
-            this.physics.add.collider(this.atackes, layerCollider, this.handleAtackWallCollision, undefined, this);
             this.physics.add.collider(this.enemieProjectile, layerCollider, this.handleProjectileWallCollision, undefined, this);
         });
         this.enemies.getChildren().forEach(enemie => {
@@ -139,10 +123,8 @@ export default class PlayScene extends Phaser.Scene {
         // ATACK _ COLLIDER
         this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
         this.physics.add.collider(this.atackes, staticTileGroup, this.handleAtackWallCollision, undefined, this);
-        this.physics.add.collider(this.enemieProjectile, this.character, this.handlePlayerProjectileCollision, undefined, this);
         this.physics.add.collider(this.enemieProjectile, staticTileGroup, this.handleProjectileWallCollision, undefined, this);
         // ENEMY _ COLLIDER
-        this.playerCollider = this.physics.add.collider(this.enemies, this.character, this.handlePlayerEnemyCollision, undefined, this);
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
     handleAtackWallCollision(obj1, obj2) {
@@ -162,30 +144,6 @@ export default class PlayScene extends Phaser.Scene {
         // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
         obj2.destroy();
         obj1.destroy();
-    }
-    handlePlayerEnemyCollision(obj1, obj2) {
-        var _a;
-        const bat = obj2;
-        const dx = this.character.x - bat.x;
-        const dy = this.character.y - bat.y;
-        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-        this.character.handleDamege(dir);
-        sceneEvents.emit('player-health-changed', this.character.health);
-        if (this.character.health <= 0) {
-            (_a = this.playerCollider) === null || _a === void 0 ? void 0 : _a.destroy();
-        }
-    }
-    handlePlayerProjectileCollision(player, procjetile) {
-        var _a;
-        const dx = this.character.x - procjetile.x;
-        const dy = this.character.y - procjetile.y;
-        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
-        this.character.handleDamege(dir);
-        sceneEvents.emit('player-health-changed', this.character.health);
-        if (this.character.health <= 0) {
-            (_a = this.playerCollider) === null || _a === void 0 ? void 0 : _a.destroy();
-        }
-        procjetile.destroy();
     }
     handleItemCollision(obj1, obj2) {
         // Pega

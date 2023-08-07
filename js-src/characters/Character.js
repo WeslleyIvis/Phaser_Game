@@ -1,4 +1,5 @@
 import { sceneEvents } from "../events/EventCenter";
+import Sword from "../items/Sword";
 // Estados numerados do objeto Character
 var HealthState;
 (function (HealthState) {
@@ -26,6 +27,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         scene.input.on('pointerdown', (cursor) => {
             this.cursorAtack(cursor);
         });
+        this.weapon = new Sword(scene, x, y, 'itens', 'equip_14', 10, 10);
     }
     get health() {
         return this._health;
@@ -36,12 +38,37 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     setWeapon(weapon) {
         this.weapon = weapon;
     }
+    setColliderCharacterGroupEnemies(object) {
+        this.characterCollider = this.scene.physics.add.collider(this, object, this.handlePlayerEnemyCollision, undefined, this);
+    }
+    setCharacterColliderGroupProjectiles(object) {
+        this.scene.physics.add.collider(this, object, this.handlePlayerEnemyCollision, undefined, this);
+    }
+    setLayersCollider(tileLayers, staticObjects) {
+        if (typeof tileLayers === 'object') {
+            tileLayers.forEach((layer) => {
+                this.scene.physics.add.collider(this, layer);
+                this.scene.physics.add.collider(this.projectiles, layer, this.handleProjectileWallCollider, undefined, this);
+            });
+        }
+        else if (tileLayers) {
+            this.scene.physics.add.collider(this, tileLayers);
+            this.scene.physics.add.collider(this.projectiles, tileLayers, this.handleProjectileWallCollider, undefined, this);
+        }
+        if (staticObjects) {
+            staticObjects.getChildren().forEach(object => {
+                this.scene.physics.add.collider(this, object);
+                this.scene.physics.add.collider(this.projectiles, object);
+                this.scene.physics.add.collider(this.weapon, object);
+            });
+        }
+    }
+    setAtackes(atackes) {
+        this.projectiles = atackes;
+    }
     toggleActiveWeapon() {
         var _a;
         (_a = this.weapon) === null || _a === void 0 ? void 0 : _a.setActive(true).setVisible(true).setDepth(1);
-    }
-    setAtackes(atackes) {
-        this.atackes = atackes;
     }
     /*
         O método handleDamage é responsável por lidar com o dano recebido pelo personagem e atualizar seu estado de saúde.
@@ -67,10 +94,28 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             this.damageTime = 0;
         }
     }
+    handlePlayerEnemyCollision(obj1, obj2) {
+        var _a;
+        const objectCollision = obj2;
+        const dx = this.x - objectCollision.x;
+        const dy = this.y - objectCollision.y;
+        const dir = new Phaser.Math.Vector2(dx, dy).normalize().scale(200);
+        this.handleDamege(dir);
+        sceneEvents.emit('player-health-changed', this.health);
+        if (this.health <= 0) {
+            (_a = this.characterCollider) === null || _a === void 0 ? void 0 : _a.destroy();
+        }
+        if (Object.getPrototypeOf(objectCollision).constructor.name === 'Projectile') {
+            objectCollision.destroy();
+        }
+    }
+    handleProjectileWallCollider(projectile, tile) {
+        projectile.destroy();
+    }
     throwAtack(scene) {
-        if (!this.atackes)
+        if (!this.projectiles)
             return;
-        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
+        const atack = this.projectiles.get(this.x, this.y, 'magicEffect', 'effect_146');
         if (!atack) {
             return;
         }
@@ -84,13 +129,13 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         atack.setVelocity(vec.x * 300, vec.y * 300);
     }
     cursorAtack(cursor) {
-        if (!this.atackes)
+        if (!this.projectiles)
             return;
-        const atack = this.atackes.get(this.x, this.y, 'magicEffect', 'effect_146');
+        const atack = this.projectiles.get(this.x, this.y, 'magicEffect', 'effect_146');
         if (!atack)
             return;
-        console.log({ g: this.atackes, ng: this.atackes.getChildren().length });
-        sceneEvents.emit('update-count-atackes', this.maxAtackes - this.atackes.getChildren().length);
+        console.log({ g: this.projectiles, ng: this.projectiles.getChildren().length });
+        sceneEvents.emit('update-count-atackes', this.maxAtackes - this.projectiles.getChildren().length);
         const directionX = cursor.worldX - this.x;
         const directionY = cursor.worldY - this.y;
         /*
@@ -114,8 +159,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             const angle1 = this.currentAngle();
             this.weapon.x = this.x + (angle1.x * 20);
             this.weapon.y = this.y + (angle1.y * 35);
-            this.weapon.setRotation(angle);
             this.toggleActiveWeapon();
+            this.weapon.setRotation(angle);
+            console.log(this.weapon);
             setTimeout(() => {
                 var _a;
                 (_a = this.weapon) === null || _a === void 0 ? void 0 : _a.setActive(false).setVisible(false);
