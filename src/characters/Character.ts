@@ -1,10 +1,10 @@
+import { sceneEvents } from "../events/EventCenter";
+import Sword from "../items/Sword";
+
 /*
 A linha declare global é usada para adicionar uma declaração global ao escopo do TypeScript.
     Em seguida, é definido um namespace Phaser.GameObjects com uma interface GameObjectFactory que estende o GameObjectFactory do Phaser. A interface adiciona um novo método chamado character ao GameObjectFactory.
  */
-import { sceneEvents } from "../events/EventCenter";
-
- 
 
 declare global 
 {
@@ -46,6 +46,15 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     experience: number = 0
     lv: number = 1;
 
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
+        super(scene, x, y, texture, frame)
+        this.setFrame('char_1')
+
+        scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
+            this.cursorAtack(cursor)
+        })
+    }
+
     get health() {
         return this._health;
     }
@@ -54,13 +63,14 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this._health++
     }
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
-        super(scene, x, y, texture, frame)
-        this.setFrame('char_1')
+    setWeapon(weapon: Phaser.GameObjects.Sprite)
+    {
+        this.weapon = weapon
+    }
 
-        scene.input.on('pointerdown', (cursor: Phaser.Input.Pointer) => {
-            this.cursorAtack(cursor)
-        })
+    toggleActiveWeapon()
+    {
+        this.weapon?.setActive(true).setVisible(true).setDepth(1)
     }
 
     setAtackes(atackes: Phaser.Physics.Arcade.Group) 
@@ -159,6 +169,19 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
          // Define a rotação do ataque para a direção do cursor -- Radianos
         const angle = Phaser.Math.RadToDeg(Math.atan2(normalizedDirectionY, normalizedDirectionX))
         atack.setRotation(angle)
+
+           if(this.weapon) {
+            const angle1 = this.currentAngle();
+
+            this.weapon.x = this.x + (angle1.x * 20)
+            this.weapon.y = this.y + (angle1.y * 35)
+            this.weapon.setRotation(angle)
+            this.toggleActiveWeapon()
+            setTimeout(() => {
+                this.weapon?.setActive(false).setVisible(false)
+            }, 1000) 
+        }
+
     }
 
     /* 
@@ -294,7 +317,7 @@ Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser
   */
     sprite.body?.setSize(sprite.width * 0.6, sprite.height * 0.8).setOffset(10, 10)
 
-    sprite.setScale(0.7)
+    sprite.setScale(0.85)
     sprite.setDepth(1);
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).

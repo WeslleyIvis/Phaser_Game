@@ -14,6 +14,7 @@ import Hoded from "../enemies/Hoded";
 import Item from "../items/Item";
 import Gargule from "../enemies/Gargule";
 import Projectile from "../enemies/projectile";
+import Sword from "../items/Sword";
 export default class PlayScene extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
     private character!: Character;
@@ -121,7 +122,17 @@ export default class PlayScene extends Phaser.Scene {
         //     this.enemies.add(this.gargules.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'demon-gargoyle-front1'))
         // }
 
-        this.items.create(300, 300, 'itens', 'equip_14')
+        const swords = this.add.group({
+            classType: Sword,
+            createCallback: (go) => {
+                const sword = go as Sword
+                sword.setScale(.75)
+                this.character.setWeapon(sword)
+            }
+        })
+
+        swords.create(this.character.x, this.character.y, 'itens', 'equip_14', false, false)
+        
         
         const map = this.add.tilemap("map")
         const tileset: Phaser.Tilemaps.Tileset  = map.addTilesetImage("textures", "tiles") as Phaser.Tilemaps.Tileset
@@ -159,7 +170,7 @@ export default class PlayScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
         // this.cameras.main.setDeadzone(this.scale.width * 0.1, this.scale.height * 0.1)
-        this.cameras.main.setZoom(1.5)
+        this.cameras.main.setZoom(1.2)
 
         window.can = this.cameras
 
