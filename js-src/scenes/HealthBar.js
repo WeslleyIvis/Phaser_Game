@@ -1,5 +1,5 @@
 import { sceneEvents } from "../events/EventCenter";
-export default class HealthBar extends Phaser.GameObjects.Co {
+export default class HealthBar extends Phaser.GameObjects.Graphics {
     constructor(scene, x, y, width, height) {
         super(scene, { x: x, y: y });
         this.barWidth = width;

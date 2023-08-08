@@ -46,17 +46,9 @@ export default class PlayScene extends Phaser.Scene {
         this.enemies = this.physics.add.group();
     }
     createCharacter() {
-        this.character = this.add.character(700, 100, 'characters');
+        this.character = this.add.character(760, 800, 'characters');
         this.character.setColliderCharacterGroupEnemies(this.enemies);
         this.character.setCharacterColliderGroupProjectiles(this.enemieProjectile);
-        this.atackes = this.physics.add.group({
-            classType: Phaser.Physics.Arcade.Sprite,
-            maxSize: this.character.maxAtackes,
-            createCallback: (go) => {
-                this.anims.play('star', go);
-            }
-        });
-        this.character.setAtackes(this.atackes);
     }
     preload() {
         //console.log(this.textures.list)     x
@@ -93,6 +85,7 @@ export default class PlayScene extends Phaser.Scene {
         const objabove = (_c = map.createLayer("above", tileset, 0, 0)) === null || _c === void 0 ? void 0 : _c.setDepth(3);
         const tileColliderGroup = map.getObjectLayer('tiles_collider');
         const staticTileGroup = this.physics.add.staticGroup();
+        window.char = this.character;
         //Cria colisão para todos os objetos do tileMap
         tileColliderGroup === null || tileColliderGroup === void 0 ? void 0 : tileColliderGroup.objects.forEach((tile) => {
             const objectX = tile.x + tile.width / 2; // Adiciona a metade da largura para centralizar o objeto
@@ -121,15 +114,12 @@ export default class PlayScene extends Phaser.Scene {
             });
         });
         // ATACK _ COLLIDER
-        this.physics.add.collider(this.atackes, this.enemies, this.handleAtackeCollision, undefined, this);
-        this.physics.add.collider(this.atackes, staticTileGroup, this.handleAtackWallCollision, undefined, this);
         this.physics.add.collider(this.enemieProjectile, staticTileGroup, this.handleProjectileWallCollision, undefined, this);
         // ENEMY _ COLLIDER
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
     handleAtackWallCollision(obj1, obj2) {
         //this.atackes.killAndHide(obj1)
-        sceneEvents.emit('update-count-atackes', this.character.maxAtackes + 1 - this.atackes.getChildren().length);
         obj1.destroy();
     }
     handleProjectileWallCollision(obj1, obj2) {
@@ -140,7 +130,7 @@ export default class PlayScene extends Phaser.Scene {
         if (random <= 2) {
             this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
         }
-        sceneEvents.emit('update-count-atackes', this.character.maxAtackes + 1 - this.atackes.getChildren().length);
+        sceneEvents.emit('update-count-atackes', this.character.maxProjectiles + 1 - this.atackes.getChildren().length);
         // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
         obj2.destroy();
         obj1.destroy();
