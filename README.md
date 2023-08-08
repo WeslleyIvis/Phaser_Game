@@ -1,9 +1,4 @@
-# Dev game in JS
-Tudo que é você precisa para desenvolver um jogo com JavaScript...
-  
-
 ## Engine
-
     Phaser3
         Documentation: https://photonstorm.github.io/phaser3-docs/Phaser.Scene.html#load__anchor
         Examples: https://labs.phaser.io/index.html
