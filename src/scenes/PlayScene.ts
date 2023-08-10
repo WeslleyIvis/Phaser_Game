@@ -107,7 +107,7 @@ export default class PlayScene extends Phaser.Scene {
         
         for(let x = 0; x < 1; x++)
         {
-            // this.enemies.add(this.bats.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
+            this.enemies.add(this.bats.get(Phaser.Math.Between(2, 400), Phaser.Math.Between(500, 1200), 'enemies', 'bat-front1')) 
             this.enemies.add(this.hodeds.get(Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 250), 'enemies', 'demon-gargoyle-front1'))
             this.enemies.add(this.gargules.get(Phaser.Math.Between(200, 400), Phaser.Math.Between(200, 250), 'enemies', 'demon-gargoyle-front1'))
         }
@@ -129,8 +129,6 @@ export default class PlayScene extends Phaser.Scene {
 
         window.char = this.character
 
-
-        //Cria colisão para todos os objetos do tileMap
         tileColliderGroup?.objects.forEach((tile) => {
             const objectX = tile.x as number + (tile.width as number) / 2; // Adiciona a metade da largura para centralizar o objeto
             const objectY = tile.y as number + (tile.height as number)  / 2; // Adiciona a metade da altura para centralizar o objeto
