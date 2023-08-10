@@ -60,7 +60,9 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
             classType: Phaser.Physics.Arcade.Sprite,
             maxSize: this.maxProjectiles,
             createCallback: (projectile) => {
-                this.scene.anims.play('star', projectile)
+                const projec = projectile as Phaser.Physics.Arcade.Sprite
+                this.scene.anims.play('star', projec)
+                projec.setCollideWorldBounds(true)
             }
         })
     }
@@ -102,7 +104,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
         if(this._health <= 0) 
         {
-            // TODO: die
             this.healthState = HealthState.DEAD
             this.anims.play('char-faint')
             this.setVelocity(0, 0)
@@ -224,6 +225,15 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         atack.setVelocity(vec.x * 300, vec.y * 300)        
     }
 
+    private weaponAtack()
+    {
+        if(!this.weapon) return
+
+        const angle = this.currentAngle();
+        this.weapon.throwAtack(angle)
+    
+    }
+
     private cursorAtack(cursor: Phaser.Input.Pointer) {
         if(!this.projectiles) return
     
@@ -257,12 +267,6 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
          // Define a rotação do ataque para a direção do cursor -- Radianos
         const angle = Phaser.Math.RadToDeg(Math.atan2(normalizedDirectionY, normalizedDirectionX))
         projectile.setRotation(angle)
-
-           if(this.weapon) {
-            const angle1 = this.currentAngle();
-            this.weapon.throwAtack(this, angle1)
-        }
-
     }
 
     /* 
@@ -338,7 +342,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
         if(Phaser.Input.Keyboard.JustDown(cursor.space))
         {
-            this.throwAtack(scene)
+            this.weaponAtack()
             return
         }
 
@@ -375,7 +379,15 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                 this.setVelocity(0);
             }
         }
+        // Sword
+    
+        if(this.weapon)
+        { 
+            const angle = this.currentAngle()
+            this.weapon.updatePosition(this, angle)
+        }
     }
+
 }
 
 Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser.GameObjects.GameObjectFactory, x: number, y: number, texture: string, frame?: string | number) {
