@@ -4,21 +4,30 @@ enum SwordState {
 }
 
 export default class Sword extends Phaser.Physics.Arcade.Sprite {
-    private stateSword = SwordState.READY
+    stateSword = SwordState.READY
     private damage?: number
     private atackSpeed?: number = 0
-    ag: number
+    private angleStartDirection = {
+        right: 0,
+        left: 270,
+        top: 0,
+        down: 180
+    }
+    angleFinalDirection: number = 0
+
+    getState()
+    {
+        return this.stateSword
+    }
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number, damage?: number, atackSpeed?: number) {
         super(scene, x, y, texture, frame)
         scene.add.existing(this)
         scene.physics.world.enable(this)
-        this.setActive(false).setVisible(false).setImmovable(true)
-    
+        this.setActive(false).setVisible(false).setImmovable(true).setDepth(1).disableBody(true)
         this.damage = damage
         this.atackSpeed = atackSpeed
 
-        this.ag = 130
     }
 
     toggleActiveSword()
@@ -26,42 +35,65 @@ export default class Sword extends Phaser.Physics.Arcade.Sprite {
         this.setActive(!this.active).setVisible(!this.visible);
     }
 
-    throwAtack(character: Phaser.Physics.Arcade.Sprite, angle: Phaser.Math.Vector2)
+    throwAtack(angle: Phaser.Math.Vector2)
     {
         if(this.stateSword === SwordState.READY)
         {
-            this.x = character.x + (angle.x * 20)
-            this.y = character.y + (angle.y * 30)
+            if(angle.x === 1) 
+            {
+                this.setAngle(this.angleStartDirection.right)
+                this.angleFinalDirection = 80
+            } else if(angle.x === -1) 
+            {
+                this.setAngle(this.angleStartDirection.left)
+                this.angleFinalDirection = -180
+            }
+            
+            if(angle.y === 1)
+            {
+                this.setAngle(this.angleStartDirection.down)
+                this.angleFinalDirection = 100
+            } else if(angle.y === -1) 
+            {
+                this.setAngle(this.angleStartDirection.top)
+                this.angleFinalDirection = -80
+            }
 
-            const angles = Phaser.Math.RadToDeg(Math.atan2(character.x, character.y))
-                      
+            this.enableBody(true)
             this.setAlpha(1)
-            this.setAngle(angles)
-
             this.toggleActiveSword()
             this.animationRotation()
             
             this.stateSword = SwordState.INTERVAL
 
-            setTimeout(() => {
-                this.toggleActiveSword()
-            }, 500 - (this.atackSpeed as number))
+            const intervalDuration = 300 - (this.atackSpeed as number)
+
+            this.scene.time.delayedCall(intervalDuration, () => {
+                this.toggleActiveSword();
+                this.disableBody(true)
+
+                const atackDuration = 600 - (this.atackSpeed as number);
+                this.scene.time.delayedCall(atackDuration, () => {
+                    this.stateSword = SwordState.READY
+                })
+            })
         
-            const atackInterval = setTimeout(() => {                
-                this.stateSword = SwordState.READY
-            }, 1000 - (this.atackSpeed as number))
         }
     }
 
+    updatePosition(character: Phaser.Physics.Arcade.Sprite, direction: Phaser.Math.Vector2)
+    {
+        this.x = character.x + (direction.x * 20)
+        this.y = character.y + (direction.y * 35)
+    }
 
     animationRotation()
     {
         this.scene.tweens.add({
             targets: this,
-            angle: this.ag,
+            angle: this.angleFinalDirection,
             ease: 'Linear',
-            duration: 1000,
-            alpha: 0
+            duration: 200,   
         })
     }
 }
