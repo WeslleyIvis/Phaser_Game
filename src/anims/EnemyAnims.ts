@@ -46,6 +46,17 @@ const createEnemiesAnims = (anims: Phaser.Animations.AnimationManager) => {
         })
     }) 
 
+    anims.create({
+        key: 'assassin-faint',
+        frameRate: 6,
+        repeat: 0,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'assassin-faint',
+            start: 36,
+            end: 38
+        })
+    })
+
     // -- // 
 
     anims.create({
