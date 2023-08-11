@@ -24,7 +24,6 @@ export default class PlayScene extends Phaser.Scene {
             classType: Hoded,
             createCallback: (go) => {
                 const hodedgo = go;
-                hodedgo.setSize(30, 50).setOffset(10, 20);
             }
         });
         this.bats = this.physics.add.group({
@@ -46,15 +45,13 @@ export default class PlayScene extends Phaser.Scene {
         this.enemies = this.physics.add.group();
     }
     createCharacter() {
-        this.character = this.add.character(760, 800, 'characters');
+        this.character = this.add.character(100, 800, 'characters');
         this.character.setColliderCharacterGroupEnemies(this.enemies);
         this.character.setCharacterColliderGroupProjectiles(this.enemieProjectile);
     }
     preload() {
-        //console.log(this.textures.list)     x
         var _a;
         this.cursor = (_a = this.input.keyboard) === null || _a === void 0 ? void 0 : _a.addKeys(CST.KEYBOARD.KEYS);
-        this.load.image("tiles", "./assets/maps/textures.png");
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
     create() {
@@ -117,21 +114,7 @@ export default class PlayScene extends Phaser.Scene {
         // ENEMY _ COLLIDER
         this.physics.add.collider(this.items, this.character, this.handleItemCollision, undefined, this);
     }
-    handleAtackWallCollision(obj1, obj2) {
-        //this.atackes.killAndHide(obj1)
-        obj1.destroy();
-    }
     handleProjectileWallCollision(obj1, obj2) {
-        obj1.destroy();
-    }
-    handleAtackeCollision(obj1, obj2) {
-        const random = Phaser.Math.Between(0, 10);
-        if (random <= 2) {
-            this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL);
-        }
-        sceneEvents.emit('update-count-atackes', this.character.maxProjectiles + 1 - this.atackes.getChildren().length);
-        // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
-        obj2.destroy();
         obj1.destroy();
     }
     handleItemCollision(obj1, obj2) {
@@ -153,5 +136,17 @@ export default class PlayScene extends Phaser.Scene {
         if (this.character) {
             this.character.update(this.cursor, this);
         }
+        if (this.character.x <= 20) {
+            // this.SceneAbandonedVillage(CST.SCENES.ABANDONED_VILLAGE)
+            this.scene.start(CST.SCENES.ABANDONED_VILLAGE, this.character);
+        }
+    }
+    SceneAbandonedVillage(targetScene) {
+        this.scene.transition({
+            target: targetScene,
+            duration: 1000,
+            moveBelow: true,
+            data: { x: this.character.x, y: this.character.y }
+        });
     }
 }

@@ -33,6 +33,7 @@ export default class LoadScene extends Phaser.Scene {
         this.load.atlas("enemies", "./assets/sprites/enemies.png", "./assets/sprites/enemies.json");
         this.load.atlas("itens", "./assets/image/itens.png", "./assets/image/itens.json");
         this.load.atlas("magicEffect", "./assets/sprites/spellsEfects.png", "./assets/sprites/spellsEfects.json");
+        this.load.image("tiles", "./assets/maps/textures.png");
         // Load image, spritesheet, sound
         this.loadImages();
         this.loadAudio();

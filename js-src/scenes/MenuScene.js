@@ -55,7 +55,6 @@ export default class MenuScene extends Phaser.Scene {
             hoverSprit.setVisible(false);
         });
         playButton.on('pointerup', () => {
-            console.log('CST.SCENES.PLAY');
             this.scene.start(CST.SCENES.PLAY);
         });
         optionsButton.on('pointerover', () => {

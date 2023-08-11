@@ -39,6 +39,16 @@ const createEnemiesAnims = (anims) => {
             end: 2
         })
     });
+    anims.create({
+        key: 'assassin-faint',
+        frameRate: 6,
+        repeat: 0,
+        frames: anims.generateFrameNames('enemies', {
+            prefix: 'assassin-faint',
+            start: 0,
+            end: 2
+        })
+    });
     // -- // 
     anims.create({
         key: 'bat-front',

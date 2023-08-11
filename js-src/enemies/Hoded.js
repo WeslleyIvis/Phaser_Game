@@ -17,6 +17,9 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture, frame);
         this.direction = Direction.RIGHT;
         this.speed = 40;
+        scene.add.existing(this);
+        scene.physics.world.enable(this);
+        this.setSize(this.width * 0.6, this.height * 0.7).setOffset(10, 20).setScale(0.85);
         scene.physics.world.on(Phaser.Physics.Arcade.Events.TILE_COLLIDE, this.handleTileColision, this);
         this.setDepth(1);
     }
@@ -35,6 +38,13 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
         }
         direciton.normalize();
         this.setVelocity(direciton.x * this.speed, direciton.y * this.speed);
+    }
+    destroy(fromScene) {
+        this.anims.play('assassin-faint', true);
+        this.setActive(false).disableBody(true);
+        this.scene.time.delayedCall(2000, () => {
+            super.destroy(fromScene);
+        });
     }
     preUpdate(time, delta) {
         super.preUpdate(time, delta);

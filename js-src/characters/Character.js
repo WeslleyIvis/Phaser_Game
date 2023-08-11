@@ -14,6 +14,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, frame) {
         super(scene, x, y, texture, frame);
         this.healthState = HealthState.IDLE;
+        this.TouchBorder = undefined;
         this.damageTime = 0;
         this._health = 3;
         this.atackPower = 1;
@@ -37,6 +38,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                 projec.setCollideWorldBounds(true);
             }
         });
+        console.log(this.scene.game.config);
     }
     get health() {
         return this._health;
@@ -82,6 +84,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this.scene.physics.add.collider(this, object, this.handlePlayerEnemyCollision, undefined, this);
     }
     setLayersCollider(tileLayers, staticObjects) {
+        console.log(tileLayers, typeof tileLayers);
         if (typeof tileLayers === 'object') {
             tileLayers.forEach((layer) => {
                 this.scene.physics.add.collider(this, layer);
@@ -302,6 +305,6 @@ Phaser.GameObjects.GameObjectFactory.register('character', function (x, y, textu
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
     */
-    sprite.setCollideWorldBounds(true);
+    // sprite.setCollideWorldBounds(true)
     return sprite;
 });
