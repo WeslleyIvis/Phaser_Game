@@ -30,21 +30,19 @@ enum HealthState
 */
 export default class Character extends Phaser.Physics.Arcade.Sprite {
     private healthState = HealthState.IDLE;
+    private TouchBorder?: Number = undefined;
     private damageTime = 0;
     private characterCollider?: Phaser.Physics.Arcade.Collider
     private _health = 3;
     private weapon?: Phaser.Physics.Arcade.Sprite & Sword
-
-    private projectiles!: Phaser.Physics.Arcade.Group
-    
-    atackPower = 1;
-    atackSpeed = 1;
-
+    private projectiles!: Phaser.Physics.Arcade.Group  
+    private atackPower = 1;
+    private atackSpeed = 1;
     maxHealth: number = 3;
-    maxProjectiles = 3
-    velocity: number = 100;
-    experience: number = 0
-    lv: number = 1;
+    private maxProjectiles = 3
+    private velocity: number = 100;
+    private experience: number = 0
+    private lv: number = 1;
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame)
@@ -65,6 +63,8 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
                 projec.setCollideWorldBounds(true)
             }
         })
+
+        console.log(this.scene.game.config)
     }
 
     get health() {
@@ -133,6 +133,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
 
     setLayersCollider(tileLayers?: Phaser.Tilemaps.TilemapLayer | Phaser.Tilemaps.TilemapLayer[], staticObjects?: Phaser.Physics.Arcade.StaticGroup) 
     {
+        console.log(tileLayers, typeof tileLayers)
         if(typeof tileLayers === 'object')
         {
             (tileLayers as Phaser.Tilemaps.TilemapLayer[]).forEach((layer) => {
@@ -414,7 +415,7 @@ Phaser.GameObjects.GameObjectFactory.register('character', function(this: Phaser
     /*
         Configuração do objeto 'sprite' para colidir com os limites do mundo do jogo (setCollideWorldBounds(true)).
     */
-    sprite.setCollideWorldBounds(true)
+    // sprite.setCollideWorldBounds(true)
 
     return sprite;
 })
