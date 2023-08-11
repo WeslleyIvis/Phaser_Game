@@ -69,12 +69,13 @@ export default class Sword extends Phaser.Physics.Arcade.Sprite {
             const intervalDuration = 300 - (this.atackSpeed as number)
 
             this.scene.time.delayedCall(intervalDuration, () => {
-                this.toggleActiveSword();
+                this.toggleActiveSword()
                 this.disableBody(true)
 
                 const atackDuration = 600 - (this.atackSpeed as number);
                 this.scene.time.delayedCall(atackDuration, () => {
-                    this.stateSword = SwordState.READY
+                    if(this.stateSword === SwordState.INTERVAL)
+                        this.stateSword = SwordState.READY
                 })
             })
         
@@ -93,7 +94,7 @@ export default class Sword extends Phaser.Physics.Arcade.Sprite {
             targets: this,
             angle: this.angleFinalDirection,
             ease: 'Linear',
-            duration: 200,   
+            duration: 100,   
         })
     }
 }
