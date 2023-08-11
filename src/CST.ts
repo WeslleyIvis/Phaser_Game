@@ -3,6 +3,7 @@ export const CST = {
     LOAD: 'LOAD',
     MENU: 'MENU',
     PLAY: 'PLAY',
+    ABANDONED_VILLAGE: 'ABANDONED_VILLAGE',
     GAME_UI: 'GAME-UI'
   },
   IMAGE: {
