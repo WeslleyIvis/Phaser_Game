@@ -82,7 +82,6 @@ export default class MenuScene extends Phaser.Scene {
     });
 
     playButton.on('pointerup', () => {
-      console.log('CST.SCENES.PLAY');
       this.scene.start(CST.SCENES.PLAY);
     });
 

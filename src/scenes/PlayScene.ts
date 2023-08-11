@@ -36,6 +36,7 @@ export default class PlayScene extends Phaser.Scene {
 
     constructor() {
         super({key: CST.SCENES.PLAY})
+
     }
 
     createGroupsEnemies()
@@ -48,8 +49,7 @@ export default class PlayScene extends Phaser.Scene {
         this.hodeds = this.physics.add.group({
             classType: Hoded,
             createCallback: (go) => {
-                const hodedgo = go as Hoded
-                hodedgo.setSize(30,50).setOffset(10, 20)
+                const hodedgo = go as Hoded       
             }
         })
 
@@ -77,17 +77,14 @@ export default class PlayScene extends Phaser.Scene {
 
     createCharacter()
     {
-        this.character = this.add.character(760, 800, 'characters')
+        this.character = this.add.character(100, 800, 'characters')
         this.character.setColliderCharacterGroupEnemies(this.enemies)
         this.character.setCharacterColliderGroupProjectiles(this.enemieProjectile)
     }
 
     preload() {
-        //console.log(this.textures.list)     x
-
         this.cursor = this.input.keyboard?.addKeys(CST.KEYBOARD.KEYS) as Phaser.Types.Input.Keyboard.CursorKeys
-
-        this.load.image("tiles", "./assets/maps/textures.png");
+        
         this.load.tilemapTiledJSON("map", "./assets/maps/mappy.json");
     }
 
@@ -174,31 +171,11 @@ export default class PlayScene extends Phaser.Scene {
         
     }  
 
-    private handleAtackWallCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
-        //this.atackes.killAndHide(obj1)
-        obj1.destroy()
-    }
-
     private handleProjectileWallCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite)
     {
         obj1.destroy()
     }
     
-    private handleAtackeCollision(obj1: Phaser.Physics.Arcade.Sprite, obj2: Phaser.Physics.Arcade.Sprite) {
-        const random = Phaser.Math.Between(0, 10)
-
-        if(random <=2) {
-            this.items.get(obj2.x, obj2.y, CST.IMAGE.HEART_FULL)
-        }
-
-        sceneEvents.emit('update-count-atackes',  this.character.maxProjectiles + 1 - this.atackes.getChildren().length)
-
-        // this.enemies.get(Phaser.Math.Between(100, 1500), Phaser.Math.Between(100, 1500), 'enemies', 'bat-front1')
-
-        obj2.destroy()  
-        obj1.destroy()
-    }
-
     handleItemCollision(obj1: Phaser.GameObjects.GameObject, obj2: Phaser.GameObjects.GameObject) {
         
         // Pega
@@ -224,5 +201,22 @@ export default class PlayScene extends Phaser.Scene {
         if(this.character) {
             this.character.update(this.cursor, this)
         }
+
+        if(this.character.x <= 20)
+        {
+            // this.SceneAbandonedVillage(CST.SCENES.ABANDONED_VILLAGE)
+            this.scene.start(CST.SCENES.ABANDONED_VILLAGE, this.character)
+        }
     }
+
+    SceneAbandonedVillage(targetScene: string)
+    {
+        this.scene.transition({
+            target: targetScene,
+            duration: 1000,
+            moveBelow: true,
+            data: {x: this.character.x, y: this.character.y}
+        })
+    }
+
 }
