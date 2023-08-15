@@ -5,6 +5,10 @@ interface SpawnArea {
     height: number
 }
 
+interface SpawnXYLayerObject {
+    x: number, y: number
+}
+
 export {
-    SpawnArea
+    SpawnArea, SpawnXYLayerObject
 }
