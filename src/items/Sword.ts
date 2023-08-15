@@ -27,7 +27,6 @@ export default class Sword extends Phaser.Physics.Arcade.Sprite {
         this.setActive(false).setVisible(false).setImmovable(true).setDepth(1).disableBody(true)
         this.damage = damage
         this.atackSpeed = atackSpeed
-
     }
 
     toggleActiveSword()
