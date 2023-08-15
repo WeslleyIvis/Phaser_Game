@@ -40,8 +40,6 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
         this.setVelocity(direciton.x * this.speed, direciton.y * this.speed);
     }
     destroy(fromScene) {
-        this.anims.play('assassin-faint', true);
-        this.setActive(false).disableBody(true);
         this.scene.time.delayedCall(2000, () => {
             super.destroy(fromScene);
         });

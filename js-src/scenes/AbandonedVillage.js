@@ -2,11 +2,6 @@ import { CST } from "../CST";
 import "../characters/Character";
 import Hoded from "../enemies/Hoded";
 import ConfingScene from "./ConfingScene";
-var SpawnState;
-(function (SpawnState) {
-    SpawnState[SpawnState["FULL"] = 0] = "FULL";
-    SpawnState[SpawnState["EMPTY"] = 1] = "EMPTY";
-})(SpawnState || (SpawnState = {}));
 export default class AbandonedVillage extends Phaser.Scene {
     constructor() {
         super({ key: CST.SCENES.ABANDONED_VILLAGE });
@@ -16,6 +11,31 @@ export default class AbandonedVillage extends Phaser.Scene {
         var _a;
         this.cursor = (_a = this.input.keyboard) === null || _a === void 0 ? void 0 : _a.addKeys(CST.KEYBOARD.KEYS);
         this.load.tilemapTiledJSON("ab_village", "./assets/maps/mappy1.json");
+    }
+    spawnLayerObjectLocation(map, layerObject, objectName) {
+        const layerObj = map.getObjectLayer(layerObject);
+        const locationXY = { x: 0, y: 0 };
+        layerObj === null || layerObj === void 0 ? void 0 : layerObj.objects.forEach(obj => {
+            if (obj.name === objectName) {
+                locationXY.x = obj.x,
+                    locationXY.y = obj.y;
+            }
+        });
+        return locationXY;
+    }
+    spawnLayerObjectArea(map, layerObj, areaName) {
+        const layer = map.getObjectLayer(layerObj);
+        let areaSpawn = { x: 0, y: 0, width: 0, height: 0 };
+        layer === null || layer === void 0 ? void 0 : layer.objects.forEach(area => {
+            if (area.name === areaName) {
+                console.log(area);
+                areaSpawn.x = area.x,
+                    areaSpawn.y = area.y,
+                    areaSpawn.width = area.width + area.x,
+                    areaSpawn.height = area.height + area.y;
+            }
+        });
+        return areaSpawn;
     }
     create(data) {
         var _a, _b, _c;
@@ -35,27 +55,11 @@ export default class AbandonedVillage extends Phaser.Scene {
         this.layersCollider.forEach(layer => {
             layer === null || layer === void 0 ? void 0 : layer.setCollisionByProperty({ collider: true });
         });
-        const spawnCharRight = map.getObjectLayer('spawn_character');
-        let spawnX = 0, spawnY = 0;
-        spawnCharRight === null || spawnCharRight === void 0 ? void 0 : spawnCharRight.objects.forEach(element => {
-            if (element.name === "Spawn_Right") {
-                spawnX = element.x;
-                spawnY = element.y;
-            }
-        });
-        this.character = this.add.character(spawnX, spawnY, 'characters');
-        const spawnEnemies = map.getObjectLayer('spawn_monster');
-        spawnEnemies === null || spawnEnemies === void 0 ? void 0 : spawnEnemies.objects.forEach(area => {
-            console.log(area);
-            if (area.name === 'enemies') {
-                this.spawnEnemies = {
-                    x: area.x,
-                    y: area.y,
-                    width: area.width + area.x,
-                    height: area.height + area.y
-                };
-            }
-        });
+        const spawnChar = this.spawnLayerObjectLocation(map, 'spawn', data.spawn);
+        console.log(spawnChar);
+        this.character = this.add.character(spawnChar.x, spawnChar.y, 'characters');
+        this.spawnEnemies = this.spawnLayerObjectArea(map, 'spawn', 'enemies');
+        console.log(this.spawnEnemies);
         this.enemies = this.physics.add.group();
         this.hodeds = this.physics.add.group({
             classType: Hoded,

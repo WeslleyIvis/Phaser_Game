@@ -138,7 +138,7 @@ export default class PlayScene extends Phaser.Scene {
         }
         if (this.character.x <= 20) {
             // this.SceneAbandonedVillage(CST.SCENES.ABANDONED_VILLAGE)
-            this.scene.start(CST.SCENES.ABANDONED_VILLAGE, this.character);
+            this.scene.start(CST.SCENES.ABANDONED_VILLAGE, { spawn: "spawn_right" });
         }
     }
     SceneAbandonedVillage(targetScene) {

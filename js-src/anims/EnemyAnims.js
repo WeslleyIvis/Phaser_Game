@@ -45,8 +45,8 @@ const createEnemiesAnims = (anims) => {
         repeat: 0,
         frames: anims.generateFrameNames('enemies', {
             prefix: 'assassin-faint',
-            start: 0,
-            end: 2
+            start: 36,
+            end: 38
         })
     });
     // -- // 
