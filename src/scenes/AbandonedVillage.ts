@@ -2,17 +2,12 @@ import { CST } from "../CST"
 import { createCharacterAnims } from "../anims/CharacterAnims"
 import { createEnemiesAnims } from "../anims/EnemyAnims"
 import { createSpells } from "../anims/SpellsAnims"
-import { SpawnArea } from "./Interfaces"
+import { SpawnArea, SpawnXYLayerObject } from "./Interfaces"
 
 import "../characters/Character";
 import Character from "../characters/Character"
 import Hoded from "../enemies/Hoded";
 import ConfingScene from "./ConfingScene"
-
-enum SpawnState {
-    FULL,
-    EMPTY
-}
 
 export default class AbandonedVillage extends Phaser.Scene {
     private cursor!: Phaser.Types.Input.Keyboard.CursorKeys
@@ -36,7 +31,42 @@ export default class AbandonedVillage extends Phaser.Scene {
         this.load.tilemapTiledJSON("ab_village", "./assets/maps/mappy1.json")
     }
 
-    create(data: Character)
+    spawnLayerObjectLocation(map: Phaser.Tilemaps.Tilemap, layerObject: string, objectName: string)
+    {
+        const layerObj = map.getObjectLayer(layerObject)
+        const locationXY: {x: number, y: number} = {x: 0, y: 0}
+
+        layerObj?.objects.forEach(obj => {
+            if(obj.name === objectName)
+            {
+                locationXY.x = obj.x as number,
+                locationXY.y = obj.y as number
+            }
+        })
+
+        return locationXY;
+    }
+
+    spawnLayerObjectArea(map: Phaser.Tilemaps.Tilemap, layerObj: string, areaName: string)
+    {
+        const layer = map.getObjectLayer(layerObj);
+        let areaSpawn: SpawnArea = {x: 0, y:0, width:0, height:0};
+        
+        layer?.objects.forEach(area => {
+            if(area.name === areaName)
+            {
+                console.log(area)
+                areaSpawn.x = area.x as number,
+                areaSpawn.y = area.y as number,
+                areaSpawn.width = area.width as number + (area.x as number),
+                areaSpawn.height = area.height as number + (area.y as number)
+            }
+        })
+        
+        return areaSpawn;
+    }
+
+    create(data: any)
     {
         this.scene.run(CST.SCENES.GAME_UI)
 
@@ -60,33 +90,14 @@ export default class AbandonedVillage extends Phaser.Scene {
             layer?.setCollisionByProperty({collider: true})
         })
 
-        const spawnCharRight = map.getObjectLayer('spawn_character')
-        let spawnX = 0, spawnY = 0
+        const spawnChar:SpawnXYLayerObject = this.spawnLayerObjectLocation(map, 'spawn', data.spawn)
+
+        console.log(spawnChar)
         
-        spawnCharRight?.objects.forEach(element => {
-            if(element.name === "Spawn_Right")
-            {
-                spawnX = element.x as number
-                spawnY = element.y as number
-            }
-        })
+        this.character = this.add.character(spawnChar.x, spawnChar.y, 'characters')
 
-        this.character = this.add.character(spawnX, spawnY, 'characters')
-
-
-        const spawnEnemies = map.getObjectLayer('spawn_monster')
-        spawnEnemies?.objects.forEach(area => {
-            console.log(area)
-            if(area.name === 'enemies')
-            {
-                this.spawnEnemies = {
-                    x: area.x as number,
-                    y: area.y as number,
-                    width: area.width as number + (area.x as number),
-                    height: area.height as number + (area.y as number)
-                }
-            }
-        })
+        this.spawnEnemies = this.spawnLayerObjectArea(map, 'spawn', 'enemies');
+        console.log(this.spawnEnemies)
 
         this.enemies = this.physics.add.group()    
 
