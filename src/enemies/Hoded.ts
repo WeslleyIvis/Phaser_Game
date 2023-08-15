@@ -16,7 +16,7 @@ const randomDireciton = (exclude: Direction) => {
 
 export default class Hoded extends Phaser.Physics.Arcade.Sprite {
     private direction = Direction.RIGHT
-    speed: number = 40
+    private speed: number = 40
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame)
@@ -53,9 +53,6 @@ export default class Hoded extends Phaser.Physics.Arcade.Sprite {
     }
 
     destroy(fromScene?: boolean | undefined): void {
-        this.anims.play('assassin-faint', true)
-        this.setActive(false).disableBody(true)
-
         this.scene.time.delayedCall(2000, () => {
             super.destroy(fromScene)
         })
