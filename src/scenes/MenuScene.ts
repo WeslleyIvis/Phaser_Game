@@ -16,11 +16,8 @@ export default class MenuScene extends Phaser.Scene {
       color: '#00000',
     };
 
-    // Create Imagems
+    this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(1).setOrigin(0).setDepth(0).setAlpha(.8);
 
-    this.add.image(0, 0, CST.IMAGE.BG_MENU).setScale(1.2).setOrigin(0).setDepth(0).setAlpha(0.5);
-
-    // Create text Buttons
     let playButton = this.add
       .text(
         this.renderer.width / 2.3,
@@ -43,12 +40,9 @@ export default class MenuScene extends Phaser.Scene {
       )
       .setDepth(1);
 
-    // Create sprites
     let hoverSprit = this.add.sprite(100, 100, CST.SPRITE.BLUEBIRD).setDepth(1);
     hoverSprit.setScale(2);
     hoverSprit.setVisible(false);
-
-    // create audio, disable pauseonblur
 
     // this.sound.play(CST.AUDIO.TITLE, {
     //   loop: true,
@@ -64,8 +58,6 @@ export default class MenuScene extends Phaser.Scene {
         frames: [0, 1, 2, 3, 4, 5, 7, 8],
       }),
     });
-
-    // Make images buttons interactive
 
     playButton.setInteractive();
     optionsButton.setInteractive();
