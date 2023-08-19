@@ -27,5 +27,5 @@ export const CST = {
             right: Phaser.Input.Keyboard.KeyCodes.D,
             space: Phaser.Input.Keyboard.KeyCodes.SPACE
         }
-    },
+    }
 };

@@ -1,33 +1,14 @@
+import { CST } from "../CST";
 import { sceneEvents } from "../events/EventCenter";
-export default class HealthBar extends Phaser.GameObjects.Graphics {
-    constructor(scene, x, y, width, height) {
-        super(scene, { x: x, y: y });
-        this.barWidth = width;
-        this.barHeight = height;
-        this.value = 100;
-        this.maxValue = 100;
-        this.healthBar = new Phaser.GameObjects.Graphics(scene);
-        this.draw();
-        this.scene.add.existing(this);
+export default class HealthBar extends Phaser.Scene {
+    constructor() {
+        super(CST.SCENES.HEALTH_BAR);
     }
     create() {
-        sceneEvents.emit('update-health-bar');
+        this.add.rectangle(95, 47, 82, 10, 0xff0000);
+        const bar = this.add.image(48, -64, CST.IMAGE.LIFE_BAR).setOrigin(0).setCrop(0, 48, 48, 16).setScale(2);
+        sceneEvents.on('player-health-changed', this.handlePlayerHealthChanged, this);
     }
-    setValue(newValue) {
-        this.value = newValue;
-        this.draw();
-    }
-    setMaxValue(newValue) {
-        this.maxValue = newValue;
-        this.draw();
-    }
-    draw() {
-        this.clear();
-        const percent = this.value / this.maxValue;
-        this.healthBar.fillStyle(0x00ff00);
-        this.healthBar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barHeight * percent, this.barHeight);
-        this.healthBar.lineStyle(2, 0x000000);
-        this.healthBar.strokeRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
-        this.healthBar.setPosition(this.x, this.barWidth / 2, this.y - this.barHeight);
+    handlePlayerHealthChanged(health) {
     }
 }
