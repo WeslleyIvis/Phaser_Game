@@ -11,7 +11,10 @@ export const CST = {
     BG_MENU: "bg-menu.jpg",
     HEART_FULL: 'heart_full.png',
     HEART_EMPTY: 'heart_empty.png',
-    LIFE_BAR: 'lifebar.png'
+    INTERFACE_BAR: 'Interface_health.png',
+    HEALTH_BAR: 'health_bar.png',
+    MANA_BAR: 'mana_bar.png',
+    EXP_BAR: 'exp_bar.png',
   },
   AUDIO: {
     TITLE: "title-song.mp3"
