@@ -33,7 +33,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
     private TouchBorder?: Number = undefined;
     private damageTime = 0;
     private characterCollider?: Phaser.Physics.Arcade.Collider
-    private _health = 3;
+    private _health = 5;
     private weapon?: Phaser.Physics.Arcade.Sprite & Sword
     private projectiles!: Phaser.Physics.Arcade.Group  
     private atackPower = 1;
