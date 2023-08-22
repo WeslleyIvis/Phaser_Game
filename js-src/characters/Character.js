@@ -16,7 +16,7 @@ export default class Character extends Phaser.Physics.Arcade.Sprite {
         this.healthState = HealthState.IDLE;
         this.TouchBorder = undefined;
         this.damageTime = 0;
-        this._health = 3;
+        this._health = 5;
         this.atackPower = 1;
         this.atackSpeed = 1;
         this.maxHealth = 3;
