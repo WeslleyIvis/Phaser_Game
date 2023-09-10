@@ -1,5 +1,7 @@
 {
   "devDependencies": {
+    "cssnano": "^6.0.1",
+    "postcss": "^8.4.29",
     "typescript": "^5.1.6"
   }
 }
