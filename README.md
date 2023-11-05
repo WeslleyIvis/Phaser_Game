@@ -30,20 +30,6 @@
             Download: https://thorbjorn.itch.io/tiled/download/eyJleHBpcmVzIjoxNjg4ODg5NjYzLCJpZCI6Mjg3Njh9.RrV1D8X1OxReZN6TG2AEFQ1nZbE%3d
 
 
-## Phaser 3
-    * Pointer Events 
-        EX: event.on("pointerover")
-            pointerover - hovering
-            pointerout - not hovering
-            pointerup - click and release
-            pointerdown - just click
-
-    * Gameobject events
-        EX: obj.on("animationstart")
-            animationstart
-            animationrepeat
-            animationupdate
-            animationcomplete
 
 ![image](https://github.com/WeslleyIvis/Phaser_Game/assets/79803635/f2de4619-8bdd-4ffc-84ce-27f544d50216)
 
