@@ -35,4 +35,5 @@
 
 ![image](https://github.com/WeslleyIvis/Phaser_Game/assets/79803635/a348a255-b250-49d2-9031-a1b613471c2d)
 
+![6ea17a97-c7cb-4dfe-9654-f8f4c26d2586](https://github.com/WeslleyIvis/Phaser_Game/assets/79803635/3d09f66b-4f32-4534-88b2-6b771eadf10a)
 
